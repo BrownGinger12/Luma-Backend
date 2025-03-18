@@ -1,6 +1,5 @@
 from flask import Flask, jsonify, make_response, request
-from Model.User import User
-from Gateways.DynamoDB_Gateway import DynamoDB
+from Handler.User_Handler import register_user
 
 
 app = Flask(__name__)
@@ -19,13 +18,7 @@ def hello():
 def create_user():
     data = request.get_json()
 
-    if not data:
-        return jsonify({"error": "No data provided"}), 400
-    
-    user = User(fullName=data.get("fullName"), username=data.get("username"), password=data.get("password"), profile_url=data.get("profile_url", ""), token="")
-    
-    response = user.create()
-    return jsonify(response), response.get("statusCode")
+    return register_user(data)
 
 @app.errorhandler(404)
 def resource_not_found(e):

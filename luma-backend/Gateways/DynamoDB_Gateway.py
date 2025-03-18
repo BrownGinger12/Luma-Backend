@@ -1,11 +1,21 @@
 import boto3
-from boto3.dynamodb.conditions import Key
+from boto3.dynamodb.conditions import Key, Attr
 
 class DynamoDB:
     def __init__(self, table_name):
         self.dynamodb = boto3.resource("dynamodb", "us-east-2")
         self.table = self.dynamodb.Table(table_name)
-
+        
+    def scan_table(self, attribute_name, attribute_value):
+        """Scans the table for a specific attribute value."""
+        try:
+            response = self.table.scan(
+                FilterExpression=Attr(attribute_name).eq(attribute_value)
+            )
+            return response.get("Items", [])
+        except Exception as e:
+            return {"statusCode": 500, "message": str(e)}
+        
     def item_exists(self, key):
         """Checks if an item exists in the table."""
         try:

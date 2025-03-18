@@ -1,0 +1,29 @@
+# "org" ensures this Service is used with the correct Serverless Framework License Key.
+org: brownginger12
+# "service" is the name of this project. This will also be added to your AWS resource names.
+service: luma-backend
+
+custom:
+  wsgi:
+    app: app.app
+  pythonRequirements:
+    dockerizePip: false
+
+provider:
+  name: aws
+  runtime: python3.12
+
+functions:
+  api:
+    handler: wsgi_handler.handler
+    events:
+      - http:
+          path: /
+          method: ANY
+      - http:
+          path: /{proxy+}
+          method: ANY
+
+plugins:
+  - serverless-wsgi
+  - serverless-python-requirements

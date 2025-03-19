@@ -25,8 +25,10 @@ provider:
             - dynamodb:DeleteItem
           Resource:
             - arn:aws:dynamodb:us-east-2:272898481162:table/luma-customer-accounts
+            - arn:aws:dynamodb:us-east-2:272898481162:table/luma-employee-accounts
   environment:
     USERS_TABLE: luma-customer-accounts
+    EMPLOYEES_TABLE: luma-employee-accounts
   
 
 package:

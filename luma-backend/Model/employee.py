@@ -3,7 +3,7 @@ from Gateways.DynamoDB_Gateway import DynamoDB
 from passlib.context import CryptContext
 import uuid
 
-db_handler = DynamoDB("luma-user-accounts")
+db_handler = DynamoDB("luma-employee-accounts")
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -15,23 +15,72 @@ class Employee(BaseModel):
     password: str = Field(..., min_length=6, description="Password cannot be empty and should be at least 6 characters long")
     role: str = Field(..., description="Role of the user")
     profile_url: str
-    token: str
 
     def hash_password(self):
         """Hashes the password using bcrypt."""
         self.password = pwd_context.hash(self.password)
 
-    def verify_password(self, plain_password: str) -> bool:
+    @staticmethod
+    def verify_password(plain_password: str, hashed_password: str) -> bool:
         """Verifies a password against the stored hash."""
-        return pwd_context.verify(plain_password, self.password)
-
+        return pwd_context.verify(plain_password, hashed_password)
+    
     def create(self):
-        self.hash_password()
+        try:
+            self.hash_password()
 
-        if db_handler.scan_table("username", self.username):
-            return {"statusCode": 400, "message": "Username already exists"}
-        
-        user_data = self.dict()
-        response = db_handler.put_item(user_data, {"user_id": user_data["user_id"]})
-        return response
+            if db_handler.scan_table("username", self.username):
+                return {"statusCode": 400, "message": "Username already exists"}
+            
+            user_data = self.dict()
+            response = db_handler.put_item(user_data, {"user_id": user_data["user_id"]})
+            return response
+        except Exception as e:
+            return {"statusCode": 500, "message": str(e)}
+    
+    @staticmethod
+    def get(attribute: str, atr_value: str):
+        try:
+            user = db_handler.scan_table(attribute, atr_value)
+            if user:
+                return {"statusCode": 200, "data": user[0]}
 
+            return {"statusCode": 404, "message": "User not found"}
+        except Exception as e:
+            return {"statusCode": 500, "message": str(e)}
+    
+    @staticmethod
+    def update(user_id: str, update_data: dict):
+        try:
+            if "username" in update_data:
+                return {"statusCode": 400, "message": "Username cannot be updated"}
+            
+            if "password" in update_data:
+                update_data["password"] = pwd_context.hash(update_data["password"])
+
+            update_expression = "SET "
+            expression_attribute_values = {}
+
+            for key, value in update_data.items():
+                update_expression += f"{key} = :{key}, "
+                expression_attribute_values[f":{key}"] = value
+
+            update_expression = update_expression.rstrip(", ")
+
+            print(user_id)
+            response = db_handler.update_item(
+                {"user_id": user_id},
+                update_expression,
+                expression_attribute_values
+            )
+            return response
+        except Exception as e:
+            return {"statusCode": 500, "message": str(e)}
+    
+    @staticmethod
+    def delete(user_id: str):
+        try:
+            response = db_handler.delete_item({"user_id": user_id})
+            return response
+        except Exception as e:
+            return {"statusCode": 500, "message": str(e)}

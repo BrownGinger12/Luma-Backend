@@ -25,6 +25,10 @@ def user_token_required(f):
         try:
             data = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
             current_user = User.get('user_id', data['user_id'])
+
+            if "password" in current_user["data"]:
+                del current_user["data"]["password"]
+
             if current_user.get("statusCode") != 200:
                 return jsonify({"error": f"User not found! {current_user}"}), 404
         except jwt.ExpiredSignatureError:
@@ -49,10 +53,13 @@ def employee_token_required(f):
 
         if not token:
             return jsonify({"error": "Token is missing!"}), 401
-        
+
         try:
             data = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
             current_employee = Employee.get('user_id', data['user_id'])
+            if "password" in current_employee["data"]:
+                del current_employee["data"]["password"]
+
             if current_employee.get("statusCode") != 200:
                 return jsonify({"error": f"User not found! {current_employee}"}), 404
         except jwt.ExpiredSignatureError:

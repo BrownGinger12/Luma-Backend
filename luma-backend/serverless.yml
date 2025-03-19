@@ -7,11 +7,16 @@ custom:
   wsgi:
     app: app.app
   pythonRequirements:
-    dockerizePip: false
+    dockerizePip: true
 
 provider:
   name: aws
   runtime: python3.12
+
+package:
+  exclude:
+    - venv/**
+    - node_modules/**
 
 functions:
   api:

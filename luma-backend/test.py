@@ -1,0 +1,3 @@
+from Model.User import User
+
+print(User.verify_token("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoibWlsZXMxMjMiLCJwcm9maWxlX3VybCI6Imh0dHBzOi8vd3d3Lmdvb2dsZS5jb20iLCJmdWxsTmFtZSI6IkpvaG4gRG9lIiwiZXhwIjoxNzQyMzQ4OTI2fQ.jhEd9ixAwhLggCmC2tjuFxM6qlhWDXVgmQddzcr0g3w"))

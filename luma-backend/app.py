@@ -1,14 +1,16 @@
 from flask import Flask, jsonify, make_response, request
 from Handler.User_Handler import register_user, login_user, edit_user, delete_user
+from Handler.Employee_Handler import register_employee, login_employee, edit_employee, delete_employee
 from functools import wraps
 from Model.User import User
+from Model.employee import Employee
 import jwt
 
 app = Flask(__name__)
 
 SECRET_KEY = "I am a secret key"
 
-def token_required(f):
+def user_token_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
         token = None
@@ -23,6 +25,10 @@ def token_required(f):
         try:
             data = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
             current_user = User.get('user_id', data['user_id'])
+
+            if "password" in current_user["data"]:
+                del current_user["data"]["password"]
+
             if current_user.get("statusCode") != 200:
                 return jsonify({"error": f"User not found! {current_user}"}), 404
         except jwt.ExpiredSignatureError:
@@ -36,14 +42,46 @@ def token_required(f):
         
     return decorated
 
+def employee_token_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        token = None
+
+        # Check if the token is in the request headers
+        if 'x-access-token' in request.headers:
+            token = request.headers['x-access-token']
+
+        if not token:
+            return jsonify({"error": "Token is missing!"}), 401
+
+        try:
+            data = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
+            current_employee = Employee.get('user_id', data['user_id'])
+            if "password" in current_employee["data"]:
+                del current_employee["data"]["password"]
+
+            if current_employee.get("statusCode") != 200:
+                return jsonify({"error": f"User not found! {current_employee}"}), 404
+        except jwt.ExpiredSignatureError:
+            return jsonify({"error": "Token has expired!"}), 401
+        except jwt.InvalidTokenError:
+            return jsonify({"error": "Invalid token!"}), 401
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
+        
+        return f(current_employee["data"], *args, **kwargs)
+        
+    return decorated
+
+
 
 @app.route("/")
-@token_required
+@user_token_required
 def hello_from_root(current_user):
     return jsonify(message='Hello from root!')
 
 @app.route("/hello")
-@token_required
+@user_token_required
 def hello(current_user):
     return jsonify(message='Hello from path!'), 200
 
@@ -60,21 +98,50 @@ def login():
     return login_user(data)
 
 @app.route("/update_user", methods=['PUT'])
-@token_required
+@user_token_required
 def update_user(current_user):
     data = request.get_json()
 
     return edit_user(data, current_user.get("user_id"))
 
 @app.route("/delete_user", methods=['DELETE'])
-@token_required
+@user_token_required
 def del_user(current_user):
     return delete_user(current_user.get("user_id"))
 
 @app.route("/get_user", methods=['GET'])
-@token_required
+@user_token_required
 def get_user(current_user):
     return jsonify(current_user), 200
+
+@app.route("/create_employee", methods=['POST'])
+def create_employee():
+    data = request.get_json()
+
+    return register_employee(data)
+
+@app.route("/login_employee", methods=['POST'])
+def signin_employee():
+    data = request.get_json()
+
+    return login_employee(data)
+
+@app.route("/update_employee", methods=['PUT'])
+@employee_token_required
+def update_employee(current_employee):
+    data = request.get_json()
+
+    return edit_employee(data, current_employee.get("user_id"))
+
+@app.route("/delete_employee", methods=['DELETE'])
+@employee_token_required
+def del_employee(current_employee):
+    return delete_employee(current_employee.get("user_id"))
+
+@app.route("/get_employee", methods=['GET'])
+@employee_token_required
+def get_employee(current_employee):
+    return jsonify(current_employee), 200
 
 @app.errorhandler(404)
 def resource_not_found(e):

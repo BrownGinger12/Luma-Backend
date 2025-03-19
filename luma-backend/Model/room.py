@@ -27,3 +27,5 @@ class Room(BaseModel):
     room_price: Decimal
     room_no_of_beds: int
     room_img_url: str
+
+    

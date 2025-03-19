@@ -12,6 +12,7 @@ class DynamoDB:
             response = self.table.scan(
                 FilterExpression=Attr(attribute_name).eq(attribute_value)
             )
+
             return response.get("Items", [])
         except Exception as e:
             return {"statusCode": 500, "message": str(e)}

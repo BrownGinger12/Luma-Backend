@@ -24,7 +24,7 @@ def token_required(f):
             data = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
             current_user = User.get('user_id', data['user_id'])
             if current_user.get("statusCode") != 200:
-                return jsonify({"error": "User not found!"}), 401
+                return jsonify({"error": f"User not found! {current_user}"}), 404
         except jwt.ExpiredSignatureError:
             return jsonify({"error": "Token has expired!"}), 401
         except jwt.InvalidTokenError:

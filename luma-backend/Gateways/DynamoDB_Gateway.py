@@ -28,12 +28,11 @@ class DynamoDB:
         """Inserts a new item only if it does not already exist."""
 
         if self.item_exists(item_id):
-            print(self.item_exists(item_id))
             return {"statusCode": 400, "message": "Item already exists"}
         
         try:
             self.table.put_item(Item=item)
-            return {"statusCode": 200, "message": "Item added successfully", "data": item}
+            return {"statusCode": 200, "message": "Item added successfully"}
         except Exception as e:
             return {"statusCode": 500, "message": str(e)}
 
@@ -65,9 +64,8 @@ class DynamoDB:
                 Key=key,
                 UpdateExpression=update_expression,
                 ExpressionAttributeValues=expression_values,
-                ReturnValues="ALL_NEW"
             )
-            return {"statusCode": 200, "message": "Item updated successfully", "updatedAttributes": response.get("Attributes", {})}
+            return {"statusCode": 200, "message": "Item updated successfully"}
         except Exception as e:
             return {"statusCode": 500, "message": str(e)}
 

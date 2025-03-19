@@ -1,4 +1,5 @@
 annotated-types==0.7.0
+bcrypt==4.3.0
 blinker==1.9.0
 boto3==1.37.14
 botocore==1.37.14
@@ -9,8 +10,10 @@ itsdangerous==2.2.0
 Jinja2==3.1.6
 jmespath==1.0.1
 MarkupSafe==3.0.2
+passlib==1.7.4
 pydantic==2.10.6
 pydantic_core==2.27.2
+PyJWT==2.10.1
 python-dateutil==2.9.0.post0
 s3transfer==0.11.4
 six==1.17.0

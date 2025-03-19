@@ -40,7 +40,7 @@ def login_employee(request):
                                             SECRET_KEY)
 
         if not employee.get("token"):
-            return jsonify({"error": "Invalid credentials"}), 401
+            return jsonify({"error": f"Invalid credentials {employee}"}), 401
 
         return jsonify({"token": employee.get("token")}), 200
     except Exception as e:

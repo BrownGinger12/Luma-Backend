@@ -5,7 +5,7 @@ import uuid
 import jwt
 from datetime import datetime, timezone
 
-db_handler = DynamoDB("luma-customer-accounts")
+db_handler = DynamoDB("test-users-table")
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 

@@ -2,20 +2,23 @@ from flask import jsonify
 from Model.User import User
 import jwt
 import datetime
+from pydantic import ValidationError
 
 SECRET_KEY = "I am a secret key"
 
 def register_user(request):
-    data = request
+    try:
+        data = request
 
-    if not data:
-        return jsonify({"error": "No data provided"}), 400
-    
-    user = User(fullName=data.get("fullName"), username=data.get("username"), password=data.get("password"), profile_url=data.get("profile_url", ""), token="")
-    
-    response = user.create()
-    return jsonify(response), response.get("statusCode")
-
+        if not data:
+            return jsonify({"error": "No data provided"}), 400
+        
+        user = User(fullName=data.get("fullName"), username=data.get("username"), password=data.get("password"), profile_url=data.get("profile_url", ""), token="")
+        
+        response = user.create()
+        return jsonify(response), response.get("statusCode")
+    except ValidationError as e:
+        return jsonify({"error": str(e)}), 400
 
 def login_user(request):
     try:

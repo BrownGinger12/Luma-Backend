@@ -1,4 +1,5 @@
 from pydantic import BaseModel, Field
+from typing import Literal
 from Gateways.DynamoDB_Gateway import DynamoDB
 from passlib.context import CryptContext
 import uuid
@@ -7,13 +8,14 @@ db_handler = DynamoDB("luma-employee-accounts")
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
+    
 
 class Employee(BaseModel):
     user_id: str = Field(default_factory=lambda: str(uuid.uuid4()), description="Unique user identifier")
     fullName: str = Field(..., min_length=5, description="Name cannot be empty")
     username: str = Field(..., min_length=6, description="Username cannot be empty")
     password: str = Field(..., min_length=6, description="Password cannot be empty and should be at least 6 characters long")
-    role: str = Field(..., description="Role of the user")
+    employee_role: Literal['admin', 'manager', 'customer_service', 'sales', 'room_service']
     profile_url: str
 
     def hash_password(self):
@@ -57,6 +59,10 @@ class Employee(BaseModel):
             
             if "password" in update_data:
                 update_data["password"] = pwd_context.hash(update_data["password"])
+            
+            if "employee_role" in update_data:
+                if update_data["employee_role"] not in ['admin', 'manager', 'customer_service', 'sales', 'room_service']:
+                    return {"statusCode": 400, "message": "Invalid employee role"}
 
             update_expression = "SET "
             expression_attribute_values = {}

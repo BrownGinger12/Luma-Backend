@@ -2,19 +2,23 @@ from flask import jsonify
 from Model.employee import Employee
 import jwt
 import datetime
+from pydantic import ValidationError
 
 SECRET_KEY = "I am a secret key"
 
 def register_employee(request):
-    data = request
+    try:
+        data = request
 
-    if not data:
-        return jsonify({"error": "No data provided"}), 400
-    
-    employee = Employee(fullName=data.get("fullName"), username=data.get("username"), password=data.get("password"), profile_url=data.get("profile_url", ""), role=data.get("role"), token="")
-    
-    response = employee.create()
-    return jsonify(response), response.get("statusCode")
+        if not data:
+            return jsonify({"error": "No data provided"}), 400
+        
+        employee = Employee(fullName=data.get("fullName"), username=data.get("username"), password=data.get("password"), profile_url=data.get("profile_url", ""), employee_role=data.get("employee_role"), token="")
+        
+        response = employee.create()
+        return jsonify(response), response.get("statusCode")
+    except ValidationError as e:
+        return jsonify({"error": str(e)}), 400
 
 
 def login_employee(request):
@@ -32,7 +36,7 @@ def login_employee(request):
         employee = employee.get("data")
         if Employee.verify_password(data.get("password"), employee.get("password")):
             employee["token"] = jwt.encode({"user_id": employee.get("user_id"), 
-                                            "role": employee.get("role"), 
+                                            "employee_role": employee.get("employee_role"), 
                                             "username": employee.get("username"), 
                                             "profile_url": employee.get("profile_url"), 
                                             "fullName": employee.get("fullName"), 

@@ -1,3 +1,4 @@
+from datetime import datetime 
 from typing import List, Literal, Optional
 from typing_extensions import Annotated
 from pydantic import BaseModel, Field
@@ -19,7 +20,7 @@ class Room(BaseModel):
     room_img_url: Optional[List[str]]
     room_is_guest_favorite: Optional[Annotated [bool, Field(..., description="Is the room a guest favorite")]]
     room_perks: Optional[List[str]]
-    room_occupied_dates: Optional[List[str]]
+    room_occupied_dates: Optional[List[str]] = Field(default=None)  # Changed to List[str]
 
 
     def create(self):
@@ -36,7 +37,6 @@ class Room(BaseModel):
             room = db_handler.scan_table(attribute, atr_value)
             if room:
                 return {"statusCode": 200, "data": room[0]}
-
             return {"statusCode": 404, "message": "Room not found"}
         except Exception as e:
             return {"statusCode": 500, "message": str(e)}
@@ -91,7 +91,7 @@ class Room(BaseModel):
             return response
         except Exception as e:
             return {"statusCode": 500, "message": str(e)}
-        
-    
-        
-    
+
+
+
+

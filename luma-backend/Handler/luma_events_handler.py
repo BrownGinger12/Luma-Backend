@@ -29,6 +29,13 @@ def get_event(request, event_id):
     except Exception as e:
         return jsonify({"message": str(e)}), 500
     
+def get_all_events(request):
+    try:
+        response = Event.get_all()
+        return jsonify(response)
+    except Exception as e:
+        return jsonify({"message": str(e)}), 500
+    
 def update_event(request, event_id):
     try:
         data = request

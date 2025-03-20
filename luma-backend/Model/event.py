@@ -29,6 +29,17 @@ class Event(BaseModel):
             return {"statusCode": 404, "message": "Event not found"}
         except Exception as e:
             return {"statusCode": 500, "message": str(e)}
+        
+    @staticmethod
+    def get_all():
+        try:
+            events = db_handler.get_all_items()
+            if events:
+                return {"statusCode": 200, "data": events}
+
+            return {"statusCode": 404, "message": "No events found"}
+        except Exception as e:
+            return {"statusCode": 500, "message": str(e)}
     
     @staticmethod
     def update(event_id: str, update_data: dict):

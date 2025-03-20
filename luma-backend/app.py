@@ -4,6 +4,8 @@ from Handler.Employee_Handler import register_employee, login_employee, edit_emp
 from Handler.room_handler import add_room, get_room, get_all_rooms, search_rooms, update_room, delete_room
 from Handler.review_handler import *
 from Handler.transaction_handler import add_transaction, get_all_transactions, get_transaction, update_transaction, delete_transaction
+from Handler.luma_events_handler import add_event, get_all_events, get_event, update_event, delete_event
+from Handler.package_handler import add_package, get_all_packages, get_package, update_package, delete_package
 from functools import wraps
 from Model.User import User
 from Model.employee import Employee
@@ -130,13 +132,12 @@ def get_one_room(room_id):
     return get_room(request, room_id=room_id)	
 
 @app.route("/room", methods=['POST'])
-@employee_token_required
 def create_room():
     response = add_room(request)
     return response
 
 @app.route("/room/<room_id>", methods=['PUT'])
-@employee_token_required
+
 def update_one_room(room_id):
     response = update_room(request, room_id=room_id)
     return response
@@ -148,8 +149,7 @@ def delete_one_room(room_id):
     return response
 
 @app.route("/transaction", methods=['POST'])
-@employee_token_required
-def add_transaction():
+def add_one_transaction():
     return add_transaction(request)
 
 @app.route("/transactions", methods=['GET'])
@@ -161,14 +161,58 @@ def get_one_transaction(reservation_id):
     return get_transaction(request, reservation_id)
 
 @app.route("/transaction/<reservation_id>", methods=['PUT'])
-@employee_token_required
+
 def update_one_transaction(reservation_id):
     return update_transaction(request, reservation_id)
 
 @app.route("/transaction/<reservation_id>", methods=['DELETE'])
-@employee_token_required
+
 def delete_one_transaction(reservation_id):
     return delete_transaction(request, reservation_id)
+
+@app.route("/event", methods=['POST'])
+def add_one_event():
+    return add_event(request)
+
+@app.route("/events", methods=['GET'])
+def get_events():
+    return get_all_events(request)
+
+@app.route("/event/<event_id>", methods=['GET'])
+def get_one_event(event_id):
+    return get_event(request, event_id)
+
+@app.route("/event/<event_id>", methods=['PUT'])
+@employee_token_required
+def update_one_event(event_id):
+    return update_event(request, event_id)
+
+@app.route("/event/<event_id>", methods=['DELETE'])
+@employee_token_required
+def delete_one_event(event_id):
+    return delete_event(request, event_id)
+
+@app.route("/package", methods=['POST'])
+def add_one_package():
+    return add_package(request)
+
+@app.route("/packages", methods=['GET'])
+def get_packages():
+    return get_all_packages(request)
+
+@app.route("/package/<package_id>", methods=['GET'])
+def get_one_package(package_id):
+    return get_package(request, package_id)
+
+@app.route("/package/<package_id>", methods=['PUT'])
+@employee_token_required
+def update_one_package(package_id):
+    return update_package(request, package_id)
+
+@app.route("/package/<package_id>", methods=['DELETE'])
+@employee_token_required
+def delete_one_package(package_id):
+    return delete_package(request, package_id)
 
 @app.route("/create_employee", methods=['POST'])
 def create_employee():

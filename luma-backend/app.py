@@ -2,6 +2,7 @@ from flask import Flask, jsonify, make_response, request
 from Handler.User_Handler import register_user, login_user, edit_user, delete_user
 from Handler.Employee_Handler import register_employee, login_employee, edit_employee, delete_employee
 from Handler.room_handler import add_room, get_room, get_all_rooms, search_rooms, update_room, delete_room
+from Handler.review_handler import *
 from Handler.transaction_handler import add_transaction, get_all_transactions, get_transaction, update_transaction, delete_transaction
 from functools import wraps
 from Model.User import User
@@ -128,7 +129,6 @@ def search_multiple_rooms(room_name):
 def get_one_room(room_id):
     return get_room(request, room_id=room_id)	
 
-
 @app.route("/room", methods=['POST'])
 @employee_token_required
 def create_room():
@@ -198,6 +198,36 @@ def del_employee(current_employee):
 @employee_token_required
 def get_employee(current_employee):
     return jsonify(current_employee), 200
+
+#review routes
+@app.route("/create_review", methods=['POST'])
+@user_token_required
+def create_review(current_user):
+    return add_review(request, current_user.get("user_id"))
+
+@app.route("/review/<reservation_id>", methods=['GET'])
+def get_rev(reservation_id):
+    return get_review(reservation_id)
+
+
+@app.route("/review/<reservation_id>", methods=['DELETE', 'PUT'])
+@user_token_required
+def rev_ud(current_user, reservation_id):
+    method_handler = {
+        'DELETE': delete_review,
+        'PUT': update_review
+    }
+    
+    if request.method == 'PUT':
+        return method_handler[request.method](request, reservation_id)
+    
+    return method_handler[request.method](reservation_id)
+
+@app.route("/reviews/room/<room_id>", methods=['GET'])
+def get_reviews(room_id):
+    return get_reviews_room(room_id)
+
+
 
 @app.errorhandler(404)
 def resource_not_found(e):

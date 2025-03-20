@@ -1,4 +1,4 @@
-from typing import Literal, Optional
+from typing import List, Literal, Optional
 from typing_extensions import Annotated
 from pydantic import BaseModel, Field
 from Gateways.DynamoDB_Gateway import DynamoDB
@@ -16,7 +16,10 @@ class Room(BaseModel):
     room_is_available: Optional[Annotated [bool, Field(..., description="Is the room available")]] 
     room_price: Decimal
     room_no_of_beds: int
-    room_img_url: str
+    room_img_url: Optional[List[str]]
+    room_is_guest_favorite: Optional[Annotated [bool, Field(..., description="Is the room a guest favorite")]]
+    room_perks: Optional[List[str]]
+    room_occupied_dates: Optional[List[str]]
 
 
     def create(self):

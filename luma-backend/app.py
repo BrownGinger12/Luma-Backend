@@ -2,6 +2,7 @@ from flask import Flask, jsonify, make_response, request
 from Handler.User_Handler import register_user, login_user, edit_user, delete_user
 from Handler.Employee_Handler import register_employee, login_employee, edit_employee, delete_employee
 from Handler.room_handler import add_room, get_room, get_all_rooms, search_rooms, update_room, delete_room
+from Handler.transaction_handler import add_transaction, get_all_transactions, get_transaction, update_transaction, delete_transaction
 from functools import wraps
 from Model.User import User
 from Model.employee import Employee
@@ -135,15 +136,39 @@ def create_room():
     return response
 
 @app.route("/room/<room_id>", methods=['PUT'])
+@employee_token_required
 def update_one_room(room_id):
     response = update_room(request, room_id=room_id)
     return response
 
 @app.route("/room/<room_id>", methods=['DELETE'])
+@employee_token_required
 def delete_one_room(room_id):
     response = delete_room(request, room_id=room_id)
     return response
 
+@app.route("/transaction", methods=['POST'])
+@employee_token_required
+def add_transaction():
+    return add_transaction(request)
+
+@app.route("/transactions", methods=['GET'])
+def get_transactions():
+    return get_all_transactions(request)
+
+@app.route("/transaction/<reservation_id>", methods=['GET'])
+def get_one_transaction(reservation_id):
+    return get_transaction(request, reservation_id)
+
+@app.route("/transaction/<reservation_id>", methods=['PUT'])
+@employee_token_required
+def update_one_transaction(reservation_id):
+    return update_transaction(request, reservation_id)
+
+@app.route("/transaction/<reservation_id>", methods=['DELETE'])
+@employee_token_required
+def delete_one_transaction(reservation_id):
+    return delete_transaction(request, reservation_id)
 
 @app.route("/create_employee", methods=['POST'])
 def create_employee():

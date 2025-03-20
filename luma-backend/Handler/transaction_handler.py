@@ -29,6 +29,17 @@ def get_transaction(request, reservation_id):
     except Exception as e:
         return jsonify({"message": str(e)}), 500
     
+def get_all_transactions(request): 
+    try:
+        response = Transaction.get_all()
+        
+        if response.get("statusCode") == 404:
+            return jsonify({"message": "Transaction not found"}), 404
+
+        return jsonify(response), 200
+    except Exception as e:
+        return jsonify({"message": str(e)}), 500
+    
 def update_transaction(request, reservation_id):
     try:
         data = request

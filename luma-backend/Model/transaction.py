@@ -5,7 +5,7 @@ from pydantic import BaseModel, Field
 from Gateways.DynamoDB_Gateway import DynamoDB
 import uuid
 
-db_handler = DynamoDB("luma-reservation-transactions")
+db_handler = DynamoDB("luma-reservation-transaction")
 
 class Transaction(BaseModel):
     reservation_id: str = Field(default_factory=lambda: str(uuid.uuid4()), description="Unique review id")
@@ -34,6 +34,15 @@ class Transaction(BaseModel):
                 return {"statusCode": 200, "data": transaction[0]}
 
             return {"statusCode": 404, "message": "Transaction not found"}
+        except Exception as e:
+            return {"statusCode": 500, "message": str(e)}
+        
+    @staticmethod
+    def get_all():
+        try:
+            transactions = db_handler.get_all_items()
+            if transactions:
+                return transactions
         except Exception as e:
             return {"statusCode": 500, "message": str(e)}
         

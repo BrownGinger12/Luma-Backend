@@ -16,7 +16,18 @@ class DynamoDB:
             return response.get("Items", [])
         except Exception as e:
             return {"statusCode": 500, "message": str(e)}
-        
+
+    def scan_table_partial(self, attribute_name, attribute_value):
+        """Scans the table for a specific attribute value."""
+        try:
+            response = self.table.scan(
+                FilterExpression=Attr(attribute_name).contains(attribute_value)
+            )
+
+            return response.get("Items", [])
+        except Exception as e:
+            return {"statusCode": 500, "message": str(e)}
+                
     def item_exists(self, key):
         """Checks if an item exists in the table."""
         try:
@@ -33,7 +44,11 @@ class DynamoDB:
         
         try:
             self.table.put_item(Item=item)
-            return {"statusCode": 200, "message": "Item added successfully"}
+            
+            if "password" in item:
+                item.pop("password")
+
+            return {"statusCode": 200, "message": "Item added successfully", "data": item}
         except Exception as e:
             return {"statusCode": 500, "message": str(e)}
 
@@ -65,6 +80,7 @@ class DynamoDB:
                 Key=key,
                 UpdateExpression=update_expression,
                 ExpressionAttributeValues=expression_values,
+                ReturnValues="UPDATED_NEW"
             )
             return {"statusCode": 200, "message": "Item updated successfully"}
         except Exception as e:
@@ -81,11 +97,12 @@ class DynamoDB:
         except Exception as e:
             return {"statusCode": 500, "message": str(e)}
 
-    def query_items(self, product_id):
+    def query_items(self, key, value, INDEX_NAME: str):
         """Queries items from DynamoDB using only the partition key (product_id)."""
         try:
             response = self.table.query(
-                KeyConditionExpression=Key("product_id").eq(product_id)
+                IndexName=INDEX_NAME,  # Use the GSI
+                KeyConditionExpression=boto3.dynamodb.conditions.Key(key).eq(value)
             )
             return {"statusCode": 200, "data": response.get("Items", [])}
 

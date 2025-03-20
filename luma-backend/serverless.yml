@@ -8,6 +8,11 @@ custom:
     app: app.app
   pythonRequirements:
     dockerizePip: true
+  prune:
+    automatic: true       
+    includeLayers: true   
+    number: 1  
+  
 
 provider:
   name: aws
@@ -26,6 +31,12 @@ provider:
           Resource:
             - arn:aws:dynamodb:us-east-2:272898481162:table/luma-customer-accounts
             - arn:aws:dynamodb:us-east-2:272898481162:table/luma-employee-accounts
+            - arn:aws:dynamodb:us-east-2:272898481162:table/luma-rooms
+            - arn:aws:dynamodb:us-east-2:272898481162:table/luma-events
+            - arn:aws:dynamodb:us-east-2:272898481162:table/luma-package
+            - arn:aws:dynamodb:us-east-2:272898481162:table/luma-customer-reviews
+            - arn:aws:dynamodb:us-east-2:272898481162:table/luma-reservation-transaction
+
   environment:
     USERS_TABLE: luma-customer-accounts
     EMPLOYEES_TABLE: luma-employee-accounts
@@ -50,3 +61,4 @@ functions:
 plugins:
   - serverless-wsgi
   - serverless-python-requirements
+  - serverless-prune-plugin

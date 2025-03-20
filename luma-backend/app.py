@@ -1,6 +1,9 @@
 from flask import Flask, jsonify, make_response, request
 from Handler.User_Handler import register_user, login_user, edit_user, delete_user
 from Handler.Employee_Handler import register_employee, login_employee, edit_employee, delete_employee
+from Handler.room_handler import add_room, get_room, get_all_rooms, search_rooms, update_room, delete_room
+from Handler.review_handler import *
+from Handler.transaction_handler import add_transaction, get_all_transactions, get_transaction, update_transaction, delete_transaction
 from functools import wraps
 from Model.User import User
 from Model.employee import Employee
@@ -114,6 +117,59 @@ def del_user(current_user):
 def get_user(current_user):
     return jsonify(current_user), 200
 
+@app.route("/rooms", methods=['GET'])
+def get_rooms():
+    return get_all_rooms(request)
+
+@app.route("/room/search/<room_name>", methods=['GET'])
+def search_multiple_rooms(room_name):
+    return search_rooms(request, attribute="room_name", atr_value=room_name)
+
+@app.route("/room/<room_id>", methods=['GET'])
+def get_one_room(room_id):
+    return get_room(request, room_id=room_id)	
+
+@app.route("/room", methods=['POST'])
+@employee_token_required
+def create_room():
+    response = add_room(request)
+    return response
+
+@app.route("/room/<room_id>", methods=['PUT'])
+@employee_token_required
+def update_one_room(room_id):
+    response = update_room(request, room_id=room_id)
+    return response
+
+@app.route("/room/<room_id>", methods=['DELETE'])
+@employee_token_required
+def delete_one_room(room_id):
+    response = delete_room(request, room_id=room_id)
+    return response
+
+@app.route("/transaction", methods=['POST'])
+@employee_token_required
+def add_transaction():
+    return add_transaction(request)
+
+@app.route("/transactions", methods=['GET'])
+def get_transactions():
+    return get_all_transactions(request)
+
+@app.route("/transaction/<reservation_id>", methods=['GET'])
+def get_one_transaction(reservation_id):
+    return get_transaction(request, reservation_id)
+
+@app.route("/transaction/<reservation_id>", methods=['PUT'])
+@employee_token_required
+def update_one_transaction(reservation_id):
+    return update_transaction(request, reservation_id)
+
+@app.route("/transaction/<reservation_id>", methods=['DELETE'])
+@employee_token_required
+def delete_one_transaction(reservation_id):
+    return delete_transaction(request, reservation_id)
+
 @app.route("/create_employee", methods=['POST'])
 def create_employee():
     data = request.get_json()
@@ -142,6 +198,36 @@ def del_employee(current_employee):
 @employee_token_required
 def get_employee(current_employee):
     return jsonify(current_employee), 200
+
+#review routes
+@app.route("/create_review", methods=['POST'])
+@user_token_required
+def create_review(current_user):
+    return add_review(request, current_user.get("user_id"))
+
+@app.route("/review/<reservation_id>", methods=['GET'])
+def get_rev(reservation_id):
+    return get_review(reservation_id)
+
+
+@app.route("/review/<reservation_id>", methods=['DELETE', 'PUT'])
+@user_token_required
+def rev_ud(current_user, reservation_id):
+    method_handler = {
+        'DELETE': delete_review,
+        'PUT': update_review
+    }
+    
+    if request.method == 'PUT':
+        return method_handler[request.method](request, reservation_id)
+    
+    return method_handler[request.method](reservation_id)
+
+@app.route("/reviews/room/<room_id>", methods=['GET'])
+def get_reviews(room_id):
+    return get_reviews_room(room_id)
+
+
 
 @app.errorhandler(404)
 def resource_not_found(e):

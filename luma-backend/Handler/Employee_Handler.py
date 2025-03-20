@@ -4,7 +4,7 @@ import jwt
 import datetime
 from pydantic import ValidationError
 
-SECRET_KEY = "I am a secret key"
+SECRET_KEY = "I am a secret key"    
 
 def register_employee(request):
     try:

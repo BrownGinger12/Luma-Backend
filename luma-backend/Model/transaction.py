@@ -1,6 +1,7 @@
 from datetime import datetime
 from decimal import Decimal
 from typing import Optional
+from Model.EventBridgeEvent import EventbridgeEvent
 from typing_extensions import Annotated
 from pydantic import BaseModel, Field
 from Gateways.DynamoDB_Gateway import DynamoDB
@@ -29,6 +30,11 @@ class Transaction(BaseModel):
             transaction_data['dateend'] = transaction_data['dateend'].isoformat()
             
             response = db_handler.put_item(transaction_data, {"reservation_id": transaction_data["reservation_id"]})
+            
+            if response.get("statusCode") == 200:
+                event = EventbridgeEvent("transaction_update_room_dates", self.__dict__)
+                event.send()
+
             return response
         except Exception as e:
             return {"statusCode": 500, "message": str(e)}

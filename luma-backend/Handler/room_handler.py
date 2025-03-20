@@ -1,6 +1,7 @@
 from decimal import Decimal
 from flask import jsonify
 from Model.room import Room
+from Helper.helper_func import *
 import jwt
 import datetime
 from pydantic import ValidationError
@@ -95,3 +96,25 @@ def delete_room(request, room_id):
         return jsonify(response)
     except Exception as e:
         return jsonify({"message": str(e)}), 500
+    
+def update_room_dates(event):
+    try:
+        print(event)
+         
+        if 'detail' in event:
+            body = event['detail']
+            
+            dates = get_dates_in_range(body['datestart'], body['dateend'])
+
+            room = Room.get("room_id", body['room_id'])
+            room_dates = room.get("data")['room_occupied_dates']
+            room_dates.extend(dates)
+            
+            response = Room.update(body['room_id'], {"room_occupied_dates": room_dates})
+
+            print(body)
+            print(response)
+            return response
+        
+    except ValueError as e:
+        return {"message": e}

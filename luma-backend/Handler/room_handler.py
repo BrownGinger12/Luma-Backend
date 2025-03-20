@@ -64,13 +64,20 @@ def update_room(request, room_id):
             return jsonify({"message": "Room not found"}), 404
         
         room_data = room.get("data")
+        update_data = request.json.copy()
+
+        # Convert any datetime objects in room_occupied_dates to strings
+        if "room_occupied_dates" in update_data and update_data["room_occupied_dates"]:
+            update_data["room_occupied_dates"] = [
+                d.strftime("%Y-%m-%d") if isinstance(d, datetime.datetime)
+                else d if isinstance(d, str)
+                else datetime.datetime.fromtimestamp(d).strftime("%Y-%m-%d")
+                for d in update_data["room_occupied_dates"]
+            ]
 
         room = Room(**room_data)
-
         room.__dict__.pop("room_id")
-
-        room.__dict__.update(request.json)
-
+        room.__dict__.update(update_data)
         room.__dict__["room_price"] = Decimal(str(room.__dict__["room_price"]))
 
         response = Room.update(room_id, room.__dict__)

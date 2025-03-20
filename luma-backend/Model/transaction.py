@@ -60,11 +60,14 @@ class Transaction(BaseModel):
                 return {"statusCode": 400, "message": "Reservation ID cannot be updated"}
             
             update_expression = "SET "
+            expression_attribute_values = {}
+
             for key, value in update_data.items():
                 update_expression += f"{key} = :{key}, "
-            
-            update_expression = update_expression[:-2]
-            response = db_handler.update_item(update_expression, {**update_data, "reservation_id": reservation_id})
+                expression_attribute_values[f":{key}"] = value
+
+            update_expression = update_expression.rstrip(", ")
+            response = db_handler.update_item({"reservation_id": reservation_id}, update_expression, expression_attribute_values)
             return response
         except Exception as e:
             return {"statusCode": 500, "message": str(e)}

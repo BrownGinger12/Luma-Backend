@@ -26,10 +26,6 @@ class Room(BaseModel):
     def create(self):
         try:
             room_data = self.__dict__
-            # Convert datetime objects to ISO format strings
-            if room_data.get('room_occupied_dates'):
-                room_data['room_occupied_dates'] = [d.isoformat() if isinstance(d, datetime) else d 
-                                                  for d in room_data['room_occupied_dates']]
             response = db_handler.put_item(room_data, {"room_id": room_data["room_id"]})
             return response
         except Exception as e:
@@ -40,12 +36,7 @@ class Room(BaseModel):
         try:
             room = db_handler.scan_table(attribute, atr_value)
             if room:
-                # Convert ISO format strings back to datetime objects
-                if room[0].get('room_occupied_dates'):
-                    room[0]['room_occupied_dates'] = [datetime.fromisoformat(d) if isinstance(d, str) else d 
-                                                    for d in room[0]['room_occupied_dates']]
                 return {"statusCode": 200, "data": room[0]}
-
             return {"statusCode": 404, "message": "Room not found"}
         except Exception as e:
             return {"statusCode": 500, "message": str(e)}

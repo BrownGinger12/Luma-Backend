@@ -3,6 +3,7 @@ from Model.transaction import Transaction
 import datetime
 from pydantic import ValidationError
 from Gateways.DynamoDB_Gateway import DynamoDB
+from decimal import Decimal
 
 def add_transaction(request):
     try:
@@ -49,8 +50,13 @@ def update_transaction(request, reservation_id):
         transaction = Transaction.get("reservation_id", reservation_id)
         if transaction.get("statusCode") == 404:
             return jsonify({"message": "Transaction not found"}), 404
-        response = Transaction.update(reservation_id, request.json)
 
+        # Convert payment_amount to Decimal if present
+        update_data = request.json.copy()
+        if "payment_amount" in update_data:
+            update_data["payment_amount"] = Decimal(str(update_data["payment_amount"]))
+
+        response = Transaction.update(reservation_id, update_data)
         return jsonify(response)
     except Exception as e:
         return jsonify({"message": str(e)}), 500
@@ -65,4 +71,3 @@ def delete_transaction(request, reservation_id):
         return jsonify(response)
     except Exception as e:
         return jsonify({"message": str(e)}), 500
-    

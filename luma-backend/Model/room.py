@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Literal, Optional
 from typing_extensions import Annotated
 from pydantic import BaseModel, Field
 from Gateways.DynamoDB_Gateway import DynamoDB
@@ -8,23 +8,10 @@ from decimal import Decimal
 
 db_handler = DynamoDB("luma-rooms")
 
-class RoomTypes:
-    single = 'single'
-    double = 'double'
-    twin = 'twin'
-    triple = 'triple'
-    quad = 'quad'
-    queen = 'queen'
-    king = 'king'
-    deluxe = 'deluxe'
-    junior_suite = 'junior_suite'
-    executive_suite = 'executive_suite'
-    presidential_suite = 'presidential_suite'
-
 class Room(BaseModel):
     room_id: str = Field(default_factory=lambda: str(uuid.uuid4()), description="Unique room id")
-    room_name: str = Field(..., min_length=20, description="Room Name")
-    room_type: RoomTypes
+    room_name: str = Field(..., min_length=8, description="Room Name")
+    room_type: Literal['single', 'double', 'twin', 'triple', 'quad', 'queen', 'king', 'deluxe', 'junior_suite', 'executive_suite', 'presidential_suite']
     room_description: str
     room_is_available: Optional[Annotated [bool, Field(..., description="Is the room available")]] 
     room_price: Decimal
@@ -48,6 +35,28 @@ class Room(BaseModel):
                 return {"statusCode": 200, "data": room[0]}
 
             return {"statusCode": 404, "message": "Room not found"}
+        except Exception as e:
+            return {"statusCode": 500, "message": str(e)}
+        
+    @staticmethod
+    def get_some(attribute: str, atr_value: str):
+        try:
+            rooms = db_handler.scan_table_partial(attribute, atr_value)
+            if rooms:
+                return {"statusCode": 200, "data": rooms}
+
+            return {"statusCode": 404, "message": "No rooms found"}
+        except Exception as e:
+            return {"statusCode": 500, "message": str(e)}
+        
+    @staticmethod
+    def get_all():
+        try:
+            rooms = db_handler.get_all_items()
+            if rooms:
+                return rooms
+
+            return {"statusCode": 404, "message": "No rooms found"}
         except Exception as e:
             return {"statusCode": 500, "message": str(e)}
         

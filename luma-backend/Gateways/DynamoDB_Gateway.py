@@ -16,7 +16,18 @@ class DynamoDB:
             return response.get("Items", [])
         except Exception as e:
             return {"statusCode": 500, "message": str(e)}
-        
+
+    def scan_table_partial(self, attribute_name, attribute_value):
+        """Scans the table for a specific attribute value."""
+        try:
+            response = self.table.scan(
+                FilterExpression=Attr(attribute_name).contains(attribute_value)
+            )
+
+            return response.get("Items", [])
+        except Exception as e:
+            return {"statusCode": 500, "message": str(e)}
+                
     def item_exists(self, key):
         """Checks if an item exists in the table."""
         try:

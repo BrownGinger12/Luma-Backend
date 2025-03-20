@@ -11,47 +11,47 @@ def add_review(request):
         response = review.create()
         return jsonify(response)
     except ValidationError as e:
-        return jsonify({"statusCode": 400, "message": str(e)})
+        return jsonify({"message": str(e)}), 400
     except Exception as e:
-        return jsonify({"statusCode": 500, "message": str(e)})
+        return jsonify({ "message": str(e)}), 500
     
 def get_review(request, review_id):
     try:
         data = request
         if not data:
-            return jsonify({"statusCode": 400, "message": "No data provided"})
+            return jsonify({"message": "No data provided"}), 400
         
 
         response = Review.get("review_id", review_id)
         if response.get("statusCode") == 404:
-            return jsonify({"statusCode": 404, "message": "Review not found"})
+            return jsonify({"message": "Review not found"}), 404
         
         return jsonify(response)
     except Exception as e:
-        return jsonify({"statusCode": 500, "message": str(e)})
+        return jsonify({"message": str(e)}), 500
     
 def update_review(request, review_id):
     try:
         data = request
         if not data:
-            return jsonify({"statusCode": 400, "message": "No data provided"})
+            return jsonify({"message": "No data provided"}), 400
         
         review = Review.get("review_id", review_id)
         if review.get("statusCode") == 404:
-            return jsonify({"statusCode": 404, "message": "Review not found"})
+            return jsonify({"message": "Review not found"}), 404
         response = Review.update(review_id, request.json)
 
         return jsonify(response)
     except Exception as e:
-        return jsonify({"statusCode": 500, "message": str(e)})
+        return jsonify({"message": str(e)}), 500
     
 def delete_review(request, review_id):
     try:
         data = request
         if not data:
-            return jsonify({"statusCode": 400, "message": "No data provided"})
+            return jsonify({"message": "No data provided"}), 400
         
         response = Review.delete(review_id)
         return jsonify(response)
     except Exception as e:
-        return jsonify({"statusCode": 500, "message": str})
+        return jsonify({"message": str}), 500

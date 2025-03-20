@@ -11,47 +11,46 @@ def add_event(request):
         response = event.create()
         return jsonify(response)
     except ValidationError as e:
-        return jsonify({"statusCode": 400, "message": str(e)})
+        return jsonify({"message": str(e)}), 400
     except Exception as e:
-        return jsonify({"statusCode": 500, "message": str(e)})
+        return jsonify({"message": str(e)}), 500
     
 def get_event(request, event_id):
     try:
         data = request
         if not data:
-            return jsonify({"statusCode": 400, "message": "No data provided"})
+            return jsonify({"message": "No data provided"}), 400
         
-
         response = Event.get("event_id", event_id)
         if response.get("statusCode") == 404:
-            return jsonify({"statusCode": 404, "message": "Event not found"})
+            return jsonify({"message": "Event not found"}), 404
         
         return jsonify(response)
     except Exception as e:
-        return jsonify({"statusCode": 500, "message": str(e)})
+        return jsonify({"message": str(e)}), 500
     
-def  update_event(request, event_id):
+def update_event(request, event_id):
     try:
         data = request
         if not data:
-            return jsonify({"statusCode": 400, "message": "No data provided"})
+            return jsonify({"message": "No data provided"}), 400
         
         event = Event.get("event_id", event_id)
         if event.get("statusCode") == 404:
-            return jsonify({"statusCode": 404, "message": "Event not found"})
+            return jsonify({"Event not found"}), 404
         response = Event.update(event_id, request.json)
 
         return jsonify(response)
     except Exception as e:
-        return jsonify({"statusCode": 500, "message": str(e)})
+        return jsonify({"message": str(e)}), 500
 
 def delete_event(request, event_id):
     try:
         data = request
         if not data:
-            return jsonify({"statusCode": 400, "message": "No data provided"})
+            return jsonify({"message": "No data provided"}), 400
         
         response = Event.delete(event_id)
         return jsonify(response)
     except Exception as e:
-        return jsonify({"statusCode": 500, "message": str(e)})
+        return jsonify({"message": str(e)}), 500

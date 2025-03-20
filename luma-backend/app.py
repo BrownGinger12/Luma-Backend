@@ -1,6 +1,7 @@
 from flask import Flask, jsonify, make_response, request
 from Handler.User_Handler import register_user, login_user, edit_user, delete_user
 from Handler.Employee_Handler import register_employee, login_employee, edit_employee, delete_employee
+from Handler.room_handler import add_room, get_room, get_all_rooms, search_rooms, update_room, delete_room
 from functools import wraps
 from Model.User import User
 from Model.employee import Employee
@@ -113,6 +114,36 @@ def del_user(current_user):
 @user_token_required
 def get_user(current_user):
     return jsonify(current_user), 200
+
+@app.route("/rooms", methods=['GET'])
+def get_rooms():
+    return get_all_rooms(request)
+
+@app.route("/room/search/<room_name>", methods=['GET'])
+def search_multiple_rooms(room_name):
+    return search_rooms(request, attribute="room_name", atr_value=room_name)
+
+@app.route("/room/<room_id>", methods=['GET'])
+def get_one_room(room_id):
+    return get_room(request, room_id=room_id)	
+
+
+@app.route("/room", methods=['POST'])
+@employee_token_required
+def create_room():
+    response = add_room(request)
+    return response
+
+@app.route("/room/<room_id>", methods=['PUT'])
+def update_one_room(room_id):
+    response = update_room(request, room_id=room_id)
+    return response
+
+@app.route("/room/<room_id>", methods=['DELETE'])
+def delete_one_room(room_id):
+    response = delete_room(request, room_id=room_id)
+    return response
+
 
 @app.route("/create_employee", methods=['POST'])
 def create_employee():

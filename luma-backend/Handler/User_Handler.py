@@ -84,15 +84,20 @@ def delete_user(user_id):
 # 1. github token -> backend
 # 2. backend jwt token -> frontend
 # sign-in with github, generates its own github token
-def token_exchange(token):
+def token_exchange(request):
     try:
+        data = request
+
+        token = data.get("AUTH_TOKEN")
         github_user = verify_github_token(token)
         if not github_user:
             return jsonify({"error": "Invalid GitHub token"}), 401
 
         jwt_token = jwt.encode({
             "user_id": github_user.get("id"),
-            "username": github_user.get("login"),
+            "username": github_user.get("login"),\
+            "name": github_user.get("name"),
+            "avatar_url": github_user.get("avatar_url"),
             "exp": datetime.datetime.utcnow() + datetime.timedelta(minutes=30)
         }, SECRET_KEY)
 

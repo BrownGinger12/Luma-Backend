@@ -1,5 +1,5 @@
 from flask import Flask, jsonify, make_response, request
-from Handler.User_Handler import register_user, login_user, edit_user, delete_user
+from Handler.User_Handler import register_user, login_user, edit_user, delete_user, token_exchange, verify_github_token
 from Handler.Employee_Handler import register_employee, login_employee, edit_employee, delete_employee
 from Handler.room_handler import add_room, get_room, get_all_rooms, search_rooms, update_room, delete_room
 from Handler.review_handler import *
@@ -101,6 +101,12 @@ def login():
     data = request.get_json()
 
     return login_user(data)
+
+@app.route("/login_github", methods=['POST'])
+def login_github():
+    data = request.get_json()
+
+    return token_exchange(data)
 
 @app.route("/update_user", methods=['PUT'])
 @user_token_required

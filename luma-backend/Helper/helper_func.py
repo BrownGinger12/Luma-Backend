@@ -1,4 +1,6 @@
 from datetime import datetime, timedelta
+import json
+from decimal import Decimal
 
 def get_dates_in_range(start_date: str, end_date: str, date_format: str = "%Y-%m-%d"):
     """
@@ -17,3 +19,9 @@ def get_dates_in_range(start_date: str, end_date: str, date_format: str = "%Y-%m
     date_list = [(start + timedelta(days=i)).strftime(date_format) for i in range((end - start).days + 1)]
     
     return date_list
+
+class DecimalEncoder(json.JSONEncoder):
+  def default(self, obj):
+    if isinstance(obj, Decimal):
+      return str(obj)
+    return json.JSONEncoder.default(self, obj)

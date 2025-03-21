@@ -9,7 +9,7 @@ def add_transaction(request):
     try:
         transaction = Transaction(**request.json)
         response = transaction.create()
-        return jsonify(response)
+        return jsonify(response), response.get("statusCode")
     except ValidationError as e:
         return jsonify({"message": str(e)}), 400
     except Exception as e:

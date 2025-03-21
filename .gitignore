@@ -18,6 +18,7 @@ var/
 .env*
 /.c9
 
+.c9
 python/
 
 # Serverless directories

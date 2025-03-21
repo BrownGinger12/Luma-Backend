@@ -58,7 +58,7 @@ functions:
           path: /{proxy+}
           method: ANY
 
-  addProductInv:
+  room_date_change:
     handler: handlers.room_handler.update_room_dates
     events:
       - eventBridge:

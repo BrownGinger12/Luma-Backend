@@ -13,6 +13,7 @@ SECRET_KEY = "I am a secret key"
 
 class User(BaseModel):
     user_id: str = Field(default_factory=lambda: str(uuid.uuid4()), description="Unique user identifier")
+    email: str = Field(..., description="Email cannot be empty")
     fullName: str = Field(..., min_length=5, description="Name cannot be empty")
     username: str = Field(..., min_length=6, description="Username cannot be empty")
     password: str = Field(..., min_length=6, description="Password cannot be empty and should be at least 6 characters long")

@@ -28,6 +28,7 @@ provider:
             - dynamodb:PutItem
             - dynamodb:UpdateItem
             - dynamodb:DeleteItem
+            - events:PutEvents
           Resource:
             - arn:aws:dynamodb:us-east-2:272898481162:table/luma-customer-accounts
             - arn:aws:dynamodb:us-east-2:272898481162:table/luma-employee-accounts
@@ -36,6 +37,7 @@ provider:
             - arn:aws:dynamodb:us-east-2:272898481162:table/luma-package
             - arn:aws:dynamodb:us-east-2:272898481162:table/luma-customer-reviews
             - arn:aws:dynamodb:us-east-2:272898481162:table/luma-reservation-transaction
+            - arn:aws:events:us-east-2:272898481162:event-bus/luma-event-bus
 
   environment:
     USERS_TABLE: luma-customer-accounts

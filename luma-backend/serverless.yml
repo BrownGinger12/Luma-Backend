@@ -61,7 +61,7 @@ functions:
           method: ANY
 
   room_date_change:
-    handler: handlers.room_handler.update_room_dates
+    handler: Handler.room_handler.update_room_dates
     events:
       - eventBridge:
           eventBus: arn:aws:events:us-east-2:272898481162:event-bus/luma-event-bus
@@ -72,7 +72,7 @@ functions:
               - transaction_update_room_dates
   
   room_date_change_onfailure:
-    handler: handlers.transaction_handler.delete_transaction_event
+    handler: Handler.transaction_handler.delete_transaction_event
     events:
       - eventBridge:
           eventBus: arn:aws:events:us-east-2:272898481162:event-bus/luma-event-bus

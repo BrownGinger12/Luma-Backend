@@ -73,3 +73,15 @@ def delete_transaction(request, reservation_id):
         return jsonify({"message": str(e)}), 500
 
 
+def delete_transaction_event(event, context):
+    try:
+        if 'detail' in event:
+            body = event['detail']
+            reservation_id = body['reservation_id']
+            response = Transaction.delete(reservation_id)
+            return response
+        
+        return {"statusCode": 400, "message": "No reservation"}
+    
+    except Exception as e:
+        return {"statusCode": 500, "message": str(e)}

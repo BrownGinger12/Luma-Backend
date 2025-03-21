@@ -3,6 +3,7 @@ from flask import jsonify
 from Model.room import Room
 from Helper.helper_func import *
 import jwt
+from Model.EventBridgeEvent import EventbridgeEvent
 import datetime
 from pydantic import ValidationError
 from Gateways.DynamoDB_Gateway import DynamoDB
@@ -98,12 +99,11 @@ def delete_room(request, room_id):
         return jsonify({"message": str(e)}), 500
     
 def update_room_dates(event):
+    body = event['detail']
     try:
         print(event)
          
         if 'detail' in event:
-            body = event['detail']
-            
             dates = get_dates_in_range(body['datestart'], body['dateend'])
 
             room = Room.get("room_id", body['room_id'])
@@ -117,4 +117,6 @@ def update_room_dates(event):
             return response
         
     except ValueError as e:
+        event = EventbridgeEvent("transaction_on_failure", json.dumps({"message": str(e), "reservation_id": body["reservation_id"]}, cls=DecimalEncoder))
+        event.send()
         return {"message": e}

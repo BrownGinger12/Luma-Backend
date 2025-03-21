@@ -70,6 +70,17 @@ functions:
               - api-events
             detail-type:
               - transaction_update_room_dates
+  
+  room_date_change_onfailure:
+    handler: handlers.transaction_handler.delete_transaction_event
+    events:
+      - eventBridge:
+          eventBus: arn:aws:events:us-east-2:272898481162:event-bus/luma-event-bus
+          pattern:
+            source:
+              - api-events
+            detail-type:
+              - transaction_on_failure
 plugins:
   - serverless-wsgi
   - serverless-python-requirements

@@ -95,9 +95,9 @@ def token_exchange(request):
 
         jwt_token = jwt.encode({
             "user_id": github_user.get("id"),
-            "username": github_user.get("login"),\
-            "name": github_user.get("name"),
-            "avatar_url": github_user.get("avatar_url"),
+            "username": github_user.get("login"),
+            "profile_url": github_user.get("avatar_url"),
+            "fullName": github_user.get("name"),
             "exp": datetime.datetime.utcnow() + datetime.timedelta(minutes=30)
         }, SECRET_KEY)
 

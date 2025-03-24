@@ -28,6 +28,7 @@ provider:
             - dynamodb:PutItem
             - dynamodb:UpdateItem
             - dynamodb:DeleteItem
+            - events:PutEvents
           Resource:
             - arn:aws:dynamodb:us-east-2:272898481162:table/luma-customer-accounts
             - arn:aws:dynamodb:us-east-2:272898481162:table/luma-employee-accounts
@@ -36,6 +37,7 @@ provider:
             - arn:aws:dynamodb:us-east-2:272898481162:table/luma-package
             - arn:aws:dynamodb:us-east-2:272898481162:table/luma-customer-reviews
             - arn:aws:dynamodb:us-east-2:272898481162:table/luma-reservation-transaction
+            - arn:aws:events:us-east-2:272898481162:event-bus/luma-event-bus
 
   environment:
     USERS_TABLE: luma-customer-accounts
@@ -58,6 +60,27 @@ functions:
           path: /{proxy+}
           method: ANY
 
+  room_date_change:
+    handler: Handler.room_handler.update_room_dates
+    events:
+      - eventBridge:
+          eventBus: arn:aws:events:us-east-2:272898481162:event-bus/luma-event-bus
+          pattern:
+            source:
+              - api-events
+            detail-type:
+              - transaction_update_room_dates
+  
+  room_date_change_onfailure:
+    handler: Handler.transaction_handler.delete_transaction_event
+    events:
+      - eventBridge:
+          eventBus: arn:aws:events:us-east-2:272898481162:event-bus/luma-event-bus
+          pattern:
+            source:
+              - api-events
+            detail-type:
+              - transaction_on_failure
 plugins:
   - serverless-wsgi
   - serverless-python-requirements

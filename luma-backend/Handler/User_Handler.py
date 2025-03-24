@@ -14,7 +14,7 @@ def register_user(request):
         if not data:
             return jsonify({"error": "No data provided"}), 400
         
-        user = User(fullName=data.get("fullName"), username=data.get("username"), password=data.get("password"), profile_url=data.get("profile_url", ""), token="")
+        user = User(fullName=data.get("fullName"), username=data.get("username"), password=data.get("password"), profile_url=data.get("profile_url", ""), email=data.get("email", ""))
         
         response = user.create()
         return jsonify(response), response.get("statusCode")

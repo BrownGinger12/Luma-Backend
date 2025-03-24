@@ -1,6 +1,6 @@
 from datetime import datetime
 from decimal import Decimal
-from typing import Optional
+from typing import Optional, Literal
 from Model.EventBridgeEvent import EventbridgeEvent
 from Helper.helper_func import DecimalEncoder
 import json
@@ -15,21 +15,22 @@ class Transaction(BaseModel):
     reservation_id: str = Field(default_factory=lambda: str(uuid.uuid4()), description="Unique reservation id")
     user_id: str = Field(..., description="User id of the user who wrote the review")
     room_id: str = Field(..., description="Room id of the room being reviewed")
-    event_id: Optional[str] = Field(default=None, description="Event id of the event")
-    date_start: datetime = Field(..., description="Start date of the reservation")
-    date_end: datetime = Field(..., description="End date of the reservation")
-    payment_amount: Decimal = Field(..., description="Payment amount")
-    payment_type: str = Field(..., description="Payment type")
-    description: str = Field(..., description="Description of the transaction")
+    reservation_event_id: Optional[str] = Field(default=None, description="Event id of the event")
+    reservation_date_start: datetime = Field(..., description="Start date of the reservation")
+    reservation_date_end: datetime = Field(..., description="End date of the reservation")
+    reservation_payment_amount: Decimal = Field(..., description="Payment amount")
+    reservation_payment_type: str = Field(..., description="Payment type")
+    reservation_description: str = Field(..., description="Description of the transaction")
+    reservation_status:  Literal['pending', 'active', 'completed', 'cancelled']
 
     def create(self):
         try:
             transaction_data = self.model_dump()
             # Convert Decimal to string for DynamoDB
-            transaction_data['payment_amount'] = str(transaction_data['payment_amount'])
+            transaction_data['reservation_payment_amount'] = str(transaction_data['reservation_payment_amount'])
             # Convert datetime objects to ISO format strings
-            transaction_data['datestart'] = transaction_data['datestart'].isoformat()
-            transaction_data['dateend'] = transaction_data['dateend'].isoformat()
+            transaction_data['reservation_date_start'] = transaction_data['reservation_date_start'].isoformat()
+            transaction_data['reservation_date_end'] = transaction_data['reservation_date_end'].isoformat()
             
             response = db_handler.put_item(transaction_data, {"reservation_id": transaction_data["reservation_id"]})
             

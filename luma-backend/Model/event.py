@@ -9,6 +9,7 @@ db_handler = DynamoDB("luma-events")
 
 class Event(BaseModel):
     event_id: str = Field(default_factory=lambda: str(uuid.uuid4()), description="Unique event id")
+    event_name: str = Field(..., description="Event name")
     event_description: str = Field(..., description="Event description")
     event_price: Decimal
     event_dates: Optional[List[str]] = Field(default=None)
@@ -51,11 +52,15 @@ class Event(BaseModel):
                 return {"statusCode": 400, "message": "Event ID cannot be updated"}
             
             update_expression = "SET "
+            expression_attribute_values = {}
+
             for key, value in update_data.items():
                 update_expression += f"{key} = :{key}, "
+                expression_attribute_values[f":{key}"] = value
+
+            update_expression = update_expression.rstrip(", ")
             
-            update_expression = update_expression[:-2]
-            response = db_handler.update_item({"event_id": event_id}, update_expression, update_data)
+            response = db_handler.update_item({"event_id": event_id}, update_expression, expression_attribute_values)
             return response
         except Exception as e:
             return {"statusCode": 500, "message": str(e)}

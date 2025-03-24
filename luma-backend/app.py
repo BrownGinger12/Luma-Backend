@@ -143,13 +143,11 @@ def create_room():
     return response
 
 @app.route("/room/<room_id>", methods=['PUT'])
-
 def update_one_room(room_id):
     response = update_room(request, room_id=room_id)
     return response
 
 @app.route("/room/<room_id>", methods=['DELETE'])
-@employee_token_required
 def delete_one_room(room_id):
     response = delete_room(request, room_id=room_id)
     return response
@@ -216,7 +214,6 @@ def update_one_package(package_id):
     return update_package(request, package_id)
 
 @app.route("/package/<package_id>", methods=['DELETE'])
-@employee_token_required
 def delete_one_package(package_id):
     return delete_package(request, package_id)
 

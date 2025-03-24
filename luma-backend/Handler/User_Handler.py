@@ -36,7 +36,14 @@ def login_user(request):
         user = user.get("data")
 
         if User.verify_password(data.get("password"), user.get("password")):
-            user["token"] = jwt.encode({"user_id": user.get("user_id"), "username": user.get("username"), "profile_url": user.get("profile_url"), "fullName": user.get("fullName"), "exp": datetime.datetime.utcnow() + datetime.timedelta(minutes=30)}, SECRET_KEY)
+            user["token"] = jwt.encode({"user_id": user.get("user_id"), 
+                                        "username": user.get("username"), 
+                                        "profile_url": user.get("profile_url"),
+                                        "fullName": user.get("fullName"),
+                                        "email": user.get("email"),
+                                        "exp": datetime.datetime.utcnow() + 
+                                        datetime.timedelta(minutes=30)}, 
+                                        SECRET_KEY)
 
         if not user.get("token"):
             return jsonify({"error": "Invalid credentials"}), 401

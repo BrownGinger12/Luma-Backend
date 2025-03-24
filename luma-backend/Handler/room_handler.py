@@ -165,10 +165,10 @@ def update_room_image(event, context):
             file_url = body['image_url']
 
             room = Room.get("room_id", room_id)
-            room_image = room.get("data")['image_url']
+            room_image = room.get("data")['room_img_url']
             room_image.extend(file_url)
             
-            response = Room.update(room_id, {"image_url": room_image})
+            response = Room.update(room_id, {"room_img_url": room_image})
 
             if response.get("statusCode") == 404:
                 return {"message": "Room not found"}, 404

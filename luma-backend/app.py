@@ -145,7 +145,8 @@ def create_room(current_employee):
     return response
 
 @app.route("/room/<room_id>", methods=['PUT'])
-def update_one_room(room_id):
+@employee_token_required
+def update_one_room(current_user, room_id):
     response = update_room(request, room_id=room_id)
     return response
 
@@ -170,12 +171,12 @@ def get_one_transaction(reservation_id):
 
 @app.route("/transaction/<reservation_id>", methods=['PUT'])
 @employee_token_required
-def update_one_transaction(reservation_id):
+def update_one_transaction(current_user, reservation_id):
     return update_transaction(request, reservation_id)
 
 @app.route("/transaction/<reservation_id>", methods=['DELETE'])
 @employee_token_required
-def delete_one_transaction(reservation_id):
+def delete_one_transaction(current_user, reservation_id):
     return delete_transaction(request, reservation_id)
 
 @app.route("/event", methods=['POST'])
@@ -186,19 +187,19 @@ def add_one_event():
 def get_events():
     return get_all_events(request)
 
-@app.route("/event/<event_id>", methods=['GET'])
-def get_one_event(event_id):
-    return get_event(request, event_id)
+@app.route("/event/<luma_event_id>", methods=['GET'])
+def get_one_event(luma_event_id):
+    return get_event(request, luma_event_id)
 
-@app.route("/event/<event_id>", methods=['PUT'])
+@app.route("/event/<luma_event_id>", methods=['PUT'])
 @employee_token_required
-def update_one_event(event_id):
-    return update_event(request, event_id)
+def update_one_event(current_user, luma_event_id):
+    return update_event(request, luma_event_id)
 
-@app.route("/event/<event_id>", methods=['DELETE'])
+@app.route("/event/<luma_event_id>", methods=['DELETE'])
 @employee_token_required
-def delete_one_event(event_id):
-    return delete_event(request, event_id)
+def delete_one_event(current_user, luma_event_id):
+    return delete_event(request, luma_event_id)
 
 @app.route("/package", methods=['POST'])
 def add_one_package():
@@ -214,11 +215,12 @@ def get_one_package(package_id):
 
 @app.route("/package/<package_id>", methods=['PUT'])
 @employee_token_required
-def update_one_package(package_id):
+def update_one_package(current_user, package_id):
     return update_package(request, package_id)
 
 @app.route("/package/<package_id>", methods=['DELETE'])
-def delete_one_package(package_id):
+@employee_token_required
+def delete_one_package(current_user, package_id):
     return delete_package(request, package_id)
 
 @app.route("/create_employee", methods=['POST'])

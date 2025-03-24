@@ -52,7 +52,7 @@ def upload_image(request, item_id, item_type):
             event = EventbridgeEvent("user_image_upload", json.dumps({"user_id": item_id, "image_url": uploaded_file_name}))
             event.send()
         elif item_type == "employee":
-            event = EventbridgeEvent("room_image_upload", json.dumps({"employee_id": item_id, "image_url": uploaded_file_name}))
+            event = EventbridgeEvent("employee_image_upload", json.dumps({"user_id": item_id, "image_url": uploaded_file_name}))
             event.send()
 
         return jsonify({

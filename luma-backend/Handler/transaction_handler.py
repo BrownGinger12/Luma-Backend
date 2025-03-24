@@ -36,6 +36,9 @@ def get_all_transactions(request):
         
         if response.get("statusCode") == 404:
             return jsonify({"message": "Transaction not found"}), 404
+        
+        if response.get("data") == []:
+            return jsonify({"message": "No transactions found"}), 404
 
         return jsonify(response), 200
     except Exception as e:

@@ -32,6 +32,13 @@ def get_package(request, package_id):
 def get_all_packages(request):
     try:
         response = Package.get_all()
+
+        if response.get("statusCode") == 404:
+            return jsonify({"message": "Package not found"}), 404
+        
+        if response.get("data") == []:
+            return jsonify({"message": "No packages found"}), 404
+        
         return jsonify(response)
     except Exception as e:
         return jsonify({"message": str(e)}), 500

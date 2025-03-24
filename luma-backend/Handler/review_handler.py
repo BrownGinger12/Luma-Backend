@@ -32,6 +32,20 @@ def get_review(review_id):
     except Exception as e:
         return jsonify({"message": str(e)}), 500
     
+def get_all_reviews():
+    try:
+        response = Review.get_all()
+
+        if response.get("statusCode") == 404:
+            return jsonify({"message": "Review not found"}), 404
+        
+        if response.get("data") == []:
+            return jsonify({"message": "No reviews found"}), 404
+
+        return jsonify(response), 200
+    except Exception as e:
+        return jsonify({"message": str(e)}), 500
+    
 def update_review(request, review_id):
     try:
         data = request

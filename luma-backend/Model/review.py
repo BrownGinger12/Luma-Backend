@@ -10,14 +10,14 @@ class Review(BaseModel):
     review_id: str = Field(default_factory=lambda: str(uuid.uuid4()), description="Unique review id")
     user_id: str = Field(..., description="User id of the user who wrote the review")
     room_id: str = Field(..., description="Room id of the room being reviewed")
-    rating: int = Field(..., ge=1, le=5, description="Rating of the room")
-    is_accomodating: Optional[Annotated[bool, Field(description="Is the room accomodating")]] = None
-    is_helpful_staff: Optional[Annotated[bool, Field(description="Is the staff helpful")]] = None
-    is_cleanliness: Optional[Annotated[bool, Field(description="Is the room clean")]] = None
-    is_comfortable: Optional[Annotated[bool, Field(description="Is the room comfortable")]] = None
-    is_value_for_money: Optional[Annotated[bool, Field(description="Is the room value for money")]] = None
-    is_quiet: Optional[Annotated[bool, Field(description="Is the room quiet")]] = None
-    is_spacious: Optional[Annotated[bool, Field(description="Is the room spacious")]] = None
+    review_rating: int = Field(..., ge=1, le=5, description="Rating of the room")
+    review_is_accomodating: Optional[Annotated[bool, Field(description="Is the room accomodating")]] = None
+    review_is_helpful_staff: Optional[Annotated[bool, Field(description="Is the staff helpful")]] = None
+    review_is_cleanliness: Optional[Annotated[bool, Field(description="Is the room clean")]] = None
+    review_is_comfortable: Optional[Annotated[bool, Field(description="Is the room comfortable")]] = None
+    review_is_value_for_money: Optional[Annotated[bool, Field(description="Is the room value for money")]] = None
+    review_is_quiet: Optional[Annotated[bool, Field(description="Is the room quiet")]] = None
+    review_is_spacious: Optional[Annotated[bool, Field(description="Is the room spacious")]] = None
     review_text: Optional[Annotated[str, Field(description="Review text")]] = None
 
 
@@ -37,6 +37,16 @@ class Review(BaseModel):
                 return {"statusCode": 200, "data": review[0]}
 
             return {"statusCode": 404, "message": "Review not found"}
+        except Exception as e:
+            return {"statusCode": 500, "message": str(e)}
+        
+    def get_all_reviews():
+        try:
+            reviews = db_handler.get_all_items()
+            if reviews:
+                return reviews
+
+            return {"statusCode": 404, "message": "No reviews found"}
         except Exception as e:
             return {"statusCode": 500, "message": str(e)}
     

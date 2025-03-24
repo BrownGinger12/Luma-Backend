@@ -125,11 +125,11 @@ def delete_room(request, room_id):
         return jsonify({"message": str(e)}), 500
     
 def update_room_dates(event, context):
-    body = event['detail']
     try:
         print(event)
          
         if 'detail' in event:
+            body = event['detail']
             date_start = body['reservation_date_start'].split('T')[0]
             date_end = body['reservation_date_end'].split('T')[0]
             dates = get_dates_in_range(date_start, date_end)
@@ -153,4 +153,34 @@ def update_room_dates(event, context):
             {"message": str(e), "reservation_id": body["reservation_id"]}
         )
         event.send()
+        return {"message": e}
+    
+def update_room_image(event, context):
+    try:
+        print(event)
+         
+        if 'detail' in event:
+            body = event['detail']
+            room_id = body['room_id']
+            file_url = body['image_url']
+
+            room = Room.get("room_id", room_id)
+            room_image = room.get("data")['room_image_url']
+            room_image.extend(file_url)
+            
+            response = Room.update(room_id, {"room_image_url": room_image})
+
+            if response.get("statusCode") == 404:
+                return {"message": "Room not found"}, 404
+            if response.get("statusCode") == 500:
+                return {"message": "Internal server error"}, 500
+            
+            return response
+        
+    except ValueError as e:
+        # event = EventbridgeEvent(
+        #     "transaction_on_failure",
+        #     {"message": str(e), "reservation_id": body["reservation_id"]}
+        # )
+        # event.send()
         return {"message": e}

@@ -84,6 +84,40 @@ functions:
               - api-events
             detail-type:
               - transaction_on_failure
+  
+  roomImageUpload:
+    handler: Handler.room_handler.update_room_image
+    events:
+      - eventBridge:
+          eventBus: arn:aws:events:us-east-2:272898481162:event-bus/luma-event-bus
+          pattern:
+            source:
+              - api-events
+            detail-type:
+              - room_image_upload
+
+  userImageUpload:
+    handler: Handler.User_Handler.update_user_image
+    events:
+      - eventBridge:
+          eventBus: arn:aws:events:us-east-2:272898481162:event-bus/luma-event-bus
+          pattern:
+            source:
+              - api-events
+            detail-type:
+              - user_image_upload
+
+  employeeImageUpload:
+    handler: Handler.Employee_Handler.update_user_image
+    events:
+      - eventBridge:
+          eventBus: arn:aws:events:us-east-2:272898481162:event-bus/luma-event-bus
+          pattern:
+            source:
+              - api-events
+            detail-type:
+              - employee_image_upload
+
 plugins:
   - serverless-wsgi
   - serverless-python-requirements

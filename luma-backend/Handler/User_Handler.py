@@ -82,6 +82,33 @@ def delete_user(user_id):
         return jsonify(response), response.get("statusCode")
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
+def update_user_image(event, context):
+    try:
+        print(event)
+         
+        if 'detail' in event:
+            body = event['detail']
+            user_id = body['user_id']
+            file_url = body['image_url']
+            
+            response = User.update(user_id, {"profile_url": file_url})
+
+            if response.get("statusCode") == 404:
+                return {"message": "user not found"}, 404
+            if response.get("statusCode") == 500:
+                return {"message": "Internal server error"}, 500
+            
+            return response
+        
+    except ValueError as e:
+        # event = EventbridgeEvent(
+        #     "transaction_on_failure",
+        #     {"message": str(e), "reservation_id": body["reservation_id"]}
+        # )
+        # event.send()
+        return {"message": e}
+    
 
 # untested yet on PYTHON, but working on POSTMAN
 # basically we want to send a GET request on the github API below

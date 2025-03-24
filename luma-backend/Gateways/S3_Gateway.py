@@ -8,15 +8,23 @@ class S3Gateway:
         self.s3_client = boto3.client("s3", region_name="us-east-2")
         self.bucket_name = bucket_name
 
-    def upload_file_to_s3(self, file, acl="public-read"):
+    def upload_file_to_s3(self, file, path, acl="public-read"):
         """Uploads a file to the specified S3 bucket."""
         filename = secure_filename(file.filename)
+
+        if not path:
+            return {"statusCode": 400, "message": "Folder name not provided"}
+        
+        filename = secure_filename(file.filename)
+        
+        # Construct full S3 key (folder/filename)
+        s3_key = f"{path}/{filename}"
 
         try:
             self.s3_client.upload_fileobj(
                 file,
                 self.bucket_name,
-                filename,
+                s3_key,
                 ExtraArgs={
                     "ACL": acl,
                     "ContentType": file.content_type
@@ -26,4 +34,4 @@ class S3Gateway:
             
             return {"statusCode": 500, "message": str(e)}
 
-        return {"statusCode": 200, "file": filename}
+        return {"statusCode": 200, "file": s3_key}

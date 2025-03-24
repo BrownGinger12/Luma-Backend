@@ -139,7 +139,8 @@ def get_one_room(room_id):
     return get_room(request, room_id=room_id)	
 
 @app.route("/room", methods=['POST'])
-def create_room():
+@employee_token_required
+def create_room(current_employee):
     response = add_room(request)
     return response
 
@@ -149,13 +150,15 @@ def update_one_room(room_id):
     return response
 
 @app.route("/room/<room_id>", methods=['DELETE'])
-def delete_one_room(room_id):
+@employee_token_required
+def delete_one_room(current_employee, room_id):
     response = delete_room(request, room_id=room_id)
     return response
 
 @app.route("/transaction", methods=['POST'])
-def add_one_transaction():
-    return add_transaction(request)
+@user_token_required
+def add_one_transaction(current_user):
+    return add_transaction(request, current_user.get("user_id"))
 
 @app.route("/transactions", methods=['GET'])
 def get_transactions():
@@ -166,12 +169,12 @@ def get_one_transaction(reservation_id):
     return get_transaction(request, reservation_id)
 
 @app.route("/transaction/<reservation_id>", methods=['PUT'])
-
+@employee_token_required
 def update_one_transaction(reservation_id):
     return update_transaction(request, reservation_id)
 
 @app.route("/transaction/<reservation_id>", methods=['DELETE'])
-
+@employee_token_required
 def delete_one_transaction(reservation_id):
     return delete_transaction(request, reservation_id)
 
@@ -276,10 +279,9 @@ def get_reviews(room_id):
     return get_reviews_room(room_id)
 
 @app.route("/upload", methods=["POST"])
-def create():
+@employee_token_required
+def create(current_employee):
     return upload_image(request)
-
-
 
 @app.errorhandler(404)
 def resource_not_found(e):

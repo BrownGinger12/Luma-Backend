@@ -13,7 +13,7 @@ def register_employee(request):
         if not data:
             return jsonify({"error": "No data provided"}), 400
         
-        employee = Employee(fullName=data.get("fullName"), username=data.get("username"), password=data.get("password"), profile_url=data.get("profile_url", ""), employee_role=data.get("employee_role"), token="")
+        employee = Employee(fullName=data.get("fullName"), username=data.get("username"), password=data.get("password"), profile_url=data.get("profile_url", ""), employee_role=data.get("employee_role"), email=data.get("email", ""))
         
         response = employee.create()
         return jsonify(response), response.get("statusCode")
@@ -39,7 +39,8 @@ def login_employee(request):
                                             "employee_role": employee.get("employee_role"), 
                                             "username": employee.get("username"), 
                                             "profile_url": employee.get("profile_url"), 
-                                            "fullName": employee.get("fullName"), 
+                                            "fullName": employee.get("fullName"),
+                                            "enail": employee.get("email"),
                                             "exp": datetime.datetime.utcnow() + datetime.timedelta(minutes=30)}, 
                                             SECRET_KEY)
 

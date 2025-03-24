@@ -15,6 +15,7 @@ class Employee(BaseModel):
     fullName: str = Field(..., min_length=5, description="Name cannot be empty")
     username: str = Field(..., min_length=6, description="Username cannot be empty")
     password: str = Field(..., min_length=6, description="Password cannot be empty and should be at least 6 characters long")
+    email: str = Field(..., description="Email cannot be empty")
     employee_role: Literal['admin', 'manager', 'customer_service', 'sales', 'room_service']
     profile_url: str
 

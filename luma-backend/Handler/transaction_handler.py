@@ -5,9 +5,9 @@ from pydantic import ValidationError
 from Gateways.DynamoDB_Gateway import DynamoDB
 from decimal import Decimal
 
-def add_transaction(request):
+def add_transaction(request, user_id):
     try:
-        transaction = Transaction(**request.json)
+        transaction = Transaction(**request.json, user_id=user_id)
         response = transaction.create()
         return jsonify(response), response.get("statusCode")
     except ValidationError as e:

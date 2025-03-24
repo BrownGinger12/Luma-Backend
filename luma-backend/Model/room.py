@@ -17,7 +17,7 @@ class Room(BaseModel):
     room_is_available: Optional[Annotated [bool, Field(..., description="Is the room available")]] 
     room_price: Decimal
     room_no_of_beds: int
-    #room_img_url: Optional[List[str]]
+    room_img_url: Optional[List[str]]
     room_is_guest_favorite: Optional[Annotated [bool, Field(..., description="Is the room a guest favorite")]]
     room_perks: Optional[List[str]]
     room_occupied_dates: Optional[List[str]] = Field(default=None)  # Changed to List[str]

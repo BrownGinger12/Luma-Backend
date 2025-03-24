@@ -107,8 +107,8 @@ def update_room_dates(event, context):
         print(event)
          
         if 'detail' in event:
-            date_start = body['datestart'].split('T')[0]
-            date_end = body['dateend'].split('T')[0]
+            date_start = body['reservation_date_start'].split('T')[0]
+            date_end = body['reservation_date_end'].split('T')[0]
             dates = get_dates_in_range(date_start, date_end)
 
             room = Room.get("room_id", body['room_id'])

@@ -9,6 +9,7 @@ from Handler.package_handler import add_package, get_all_packages, get_package, 
 from functools import wraps
 from Model.User import User
 from Model.employee import Employee
+from Handler.Image_Upload_Handler import upload_image
 import jwt
 
 app = Flask(__name__)
@@ -273,6 +274,10 @@ def rev_ud(current_user, reservation_id):
 @app.route("/reviews/room/<room_id>", methods=['GET'])
 def get_reviews(room_id):
     return get_reviews_room(room_id)
+
+@app.route("/upload", methods=["POST"])
+def create():
+    return upload_image(request)
 
 
 

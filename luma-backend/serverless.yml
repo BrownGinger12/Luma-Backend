@@ -29,6 +29,7 @@ provider:
             - dynamodb:UpdateItem
             - dynamodb:DeleteItem
             - events:PutEvents
+            - s3:PutObject
             - s3:PutObjectAcl
           Resource:
             - arn:aws:dynamodb:us-east-2:272898481162:table/luma-customer-accounts

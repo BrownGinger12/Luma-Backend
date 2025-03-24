@@ -166,7 +166,7 @@ def update_room_image(event, context):
 
             room = Room.get("room_id", room_id)
             room_image = room.get("data")['room_img_url']
-            room_image.extend(file_url)
+            room_image.append(file_url)
             
             response = Room.update(room_id, {"room_img_url": room_image})
 

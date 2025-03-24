@@ -9,6 +9,12 @@ def add_package(request):
     try:
         package = Package(**request.json)
         response = package.create()
+        if response.get("statusCode") == 400:
+            return jsonify({"message": "Package already exists"}), 400
+        if response.get("statusCode") == 500:
+            return jsonify({"message": "Internal server error"}), 500
+        
+
         return jsonify(response)
     except ValidationError as e:
         return jsonify({"message": str(e)}), 400
@@ -54,6 +60,11 @@ def update_package(request, package_id):
             return jsonify({"Package not found"}), 404
         response = Package.update(package_id, request.json)
 
+        if response.get("statusCode") == 400:
+            return jsonify({"message": "Package ID cannot be updated"}), 400
+        if response.get("statusCode") == 500:
+            return jsonify({"message": "Internal server error"}), 500
+
         return jsonify(response)
     except Exception as e:
         return jsonify({"message": str(e)}), 500
@@ -65,6 +76,13 @@ def delete_package(request, package_id):
             return jsonify({"message": "No data provided"}), 400
         
         response = Package.delete(package_id)
+
+        if response.get("statusCode") == 404:
+            return jsonify({"message": "Package not found"}), 404
+        
+        if response.get("statusCode") == 500:
+            return jsonify({"message": "Internal server error"}), 500
+        
         return jsonify(response)
     except Exception as e:
         return jsonify({"message": str(e)}), 500

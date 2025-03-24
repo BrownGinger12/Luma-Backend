@@ -7,10 +7,16 @@ def add_review(request,user_id):
     data = request.json
     data["user_id"] = user_id
 
-    print(data)
     try:
         review = Review(**data)
         response = review.create()
+
+        if response.get("statusCode") == 400:
+            return jsonify({"message": "Review already exists"}), 400
+        if response.get("statusCode") == 500:
+            return jsonify({"message": "Internal server error"}), 500
+        
+
         return jsonify(response), response.get("statusCode")
     except ValidationError as e:
         return jsonify({"message": str(e)}), 400
@@ -57,6 +63,13 @@ def update_review(request, review_id):
             return jsonify({"message": "Review not found"}), 404
         response = Review.update(review_id, request.json)
 
+        if response.get("statusCode") == 404:
+            return jsonify({"message": "Review not found"}), 404
+        if response.get("statusCode") == 400:
+            return jsonify({"message": "Review ID cannot be updated"}), 400
+        if response.get("statusCode") == 500:
+            return jsonify({"message": "Internal server error"}), 500
+
         return jsonify(response)
     except Exception as e:
         return jsonify({"message": str(e)}), 500
@@ -67,6 +80,12 @@ def delete_review(review_id):
             return jsonify({"message": "No data provided"}), 400
         
         response = Review.delete(review_id)
+
+        if response.get("statusCode") == 404:
+            return jsonify({"message": "Review not found"}), 404
+        if response.get("statusCode") == 500:
+            return jsonify({"message": "Internal server error"}), 500
+        
         return jsonify(response)
     except Exception as e:
         return jsonify({"message": str}), 500

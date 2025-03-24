@@ -9,7 +9,12 @@ def add_event(request):
     try:
         event = Event(**request.json)
         response = event.create()
+        if response.get("statusCode") == 400:
+            return jsonify({"message": "Event already exists"}), 400
+        if response.get("statusCode") == 500:
+            return jsonify({"message": "Internal server error"}), 500
         return jsonify(response)
+    
     except ValidationError as e:
         return jsonify({"message": str(e)}), 400
     except Exception as e:
@@ -32,6 +37,15 @@ def get_event(request, event_id):
 def get_all_events(request):
     try:
         response = Event.get_all()
+
+        if response.get("statusCode") == 404:
+            return jsonify({"message": "Event not found"}), 404
+        if response.get("data") == []:
+            return jsonify({"message": "No events found"}), 404
+        
+        if response.get("statusCode") == 500:
+            return jsonify({"message": "Internal server error"}), 500
+        
         return jsonify(response)
     except Exception as e:
         return jsonify({"message": str(e)}), 500
@@ -47,6 +61,15 @@ def update_event(request, event_id):
             return jsonify({"Event not found"}), 404
         response = Event.update(event_id, request.json)
 
+        if response.get("statusCode") == 404:
+            return jsonify({"message": "Event not found"}), 404
+        
+        if response.get("statusCode") == 400:
+            return jsonify({"message": "Event ID cannot be updated"}), 400
+        
+        if response.get("statusCode") == 500:
+            return jsonify({"message": "Internal server error"}), 500
+
         return jsonify(response)
     except Exception as e:
         return jsonify({"message": str(e)}), 500
@@ -58,6 +81,12 @@ def delete_event(request, event_id):
             return jsonify({"message": "No data provided"}), 400
         
         response = Event.delete(event_id)
+
+        if response.get("statusCode") == 404:
+            return jsonify({"message": "Event not found"}), 404
+        
+        if response.get("statusCode") == 500:
+            return jsonify({"message": "Internal server error"}), 500
         return jsonify(response)
     except Exception as e:
         return jsonify({"message": str(e)}), 500

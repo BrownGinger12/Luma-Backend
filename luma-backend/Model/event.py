@@ -38,7 +38,7 @@ class Event(BaseModel):
         try:
             events = db_handler.get_all_items()
             if events:
-                return {"statusCode": 200, "data": events}
+                return events
 
             return {"statusCode": 404, "message": "No events found"}
         except Exception as e:

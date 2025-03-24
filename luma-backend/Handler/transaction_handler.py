@@ -9,6 +9,11 @@ def add_transaction(request, user_id):
     try:
         transaction = Transaction(**request.json, user_id=user_id)
         response = transaction.create()
+        if response.get("statusCode") == 400:
+            return jsonify({"message": "Transaction already exists"}), 400
+        if response.get("statusCode") == 500:
+            return jsonify({"message": "Internal server error"}), 500
+        
         return jsonify(response), response.get("statusCode")
     except ValidationError as e:
         return jsonify({"message": str(e)}), 400
@@ -26,6 +31,7 @@ def get_transaction(request, reservation_id):
         if response.get("statusCode") == 404:
             return jsonify({"message": "Transaction not found"}), 404
         
+        
         return jsonify(response)
     except Exception as e:
         return jsonify({"message": str(e)}), 500
@@ -39,6 +45,9 @@ def get_all_transactions(request):
         
         if response.get("data") == []:
             return jsonify({"message": "No transactions found"}), 404
+        
+        if response.get("statusCode") == 500:
+            return jsonify({"message": "Internal server error"}), 500
 
         return jsonify(response), 200
     except Exception as e:
@@ -60,6 +69,14 @@ def update_transaction(request, reservation_id):
             update_data["payment_amount"] = Decimal(str(update_data["payment_amount"]))
 
         response = Transaction.update(reservation_id, update_data)
+
+        if response.get("statusCode") == 404:
+            return jsonify({"message": "Transaction not found"}), 404
+        if response.get("statusCode") == 400:
+            return jsonify({"message": "Transaction ID cannot be updated"}), 400
+        if response.get("statusCode") == 500:
+            return jsonify({"message": "Internal server error"}), 500
+        
         return jsonify(response)
     except Exception as e:
         return jsonify({"message": str(e)}), 500
@@ -71,6 +88,13 @@ def delete_transaction(request, reservation_id):
             return jsonify({"message": "No data provided"}), 400
         
         response = Transaction.delete(reservation_id)
+
+        if response.get("statusCode") == 404:
+            return jsonify({"message": "Transaction not found"}), 404
+        
+        if response.get("statusCode") == 500:
+            return jsonify({"message": "Internal server error"}), 500
+        
         return jsonify(response)
     except Exception as e:
         return jsonify({"message": str(e)}), 500

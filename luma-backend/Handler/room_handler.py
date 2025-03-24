@@ -12,6 +12,12 @@ def add_room(request):
     try:
         room = Room(**request.json)
         response = room.create()
+
+        if response.get("statusCode") == 400:
+            return jsonify({"message": "Room already exists"}), 400
+        if response.get("statusCode") == 500:
+            return jsonify({"message": "Internal server error"}), 500
+        
         return jsonify(response)
     except ValidationError as e:
         return jsonify({"message": str(e)}), 400
@@ -43,6 +49,9 @@ def get_all_rooms(request):
         
         if response.get("data") == []:
             return jsonify({"message": "No rooms found"}), 404
+        
+        if response.get("statusCode") == 500:
+            return jsonify({"message": "Internal server error"}), 500
 
         return jsonify(response), 200
     except Exception as e:
@@ -54,6 +63,13 @@ def search_rooms(request, attribute, atr_value):
 
         if response.get("statusCode") == 404:
             return jsonify({"message": "Room not found"}), 404
+        
+        if response.get("data") == []:
+            return jsonify({"message": "No rooms found"}), 404
+        
+        if response.get("statusCode") == 500:
+            return jsonify({"message": "Internal server error"}), 500
+        
         return jsonify(response), 200
     except Exception as e:
         return jsonify({"message": str(e)}), 500
@@ -86,6 +102,13 @@ def update_room(request, room_id):
         room.__dict__["room_price"] = Decimal(str(room.__dict__["room_price"]))
 
         response = Room.update(room_id, room.__dict__)
+
+        if response.get("statusCode") == 404:
+            return jsonify({"message": "Room not found"}), 404
+        if response.get("statusCode") == 500:
+            return jsonify({"message": "Internal server error"}), 500
+        
+
         return jsonify(response)
     except Exception as e:
         return jsonify({"message": f"{str(e)}"}), 500
@@ -117,8 +140,11 @@ def update_room_dates(event, context):
             
             response = Room.update(body['room_id'], {"room_occupied_dates": room_dates})
 
-            print(body)
-            print(response)
+            if response.get("statusCode") == 404:
+                return {"message": "Room not found"}, 404
+            if response.get("statusCode") == 500:
+                return {"message": "Internal server error"}, 500
+            
             return response
         
     except ValueError as e:

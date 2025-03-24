@@ -16,7 +16,7 @@ def add_room(request):
         if response.get("statusCode") == 400:
             return jsonify({"message": "Room already exists"}), 400
         if response.get("statusCode") == 500:
-            return jsonify({"message": "Internal server error"}), 500
+            return jsonify({"message": response.get("message")}), 500
         
         return jsonify(response)
     except ValidationError as e:
@@ -51,7 +51,7 @@ def get_all_rooms(request):
             return jsonify({"message": "No rooms found"}), 404
         
         if response.get("statusCode") == 500:
-            return jsonify({"message": "Internal server error"}), 500
+            return jsonify({"message": response.get("message")}), 500
 
         return jsonify(response), 200
     except Exception as e:
@@ -68,7 +68,7 @@ def search_rooms(request, attribute, atr_value):
             return jsonify({"message": "No rooms found"}), 404
         
         if response.get("statusCode") == 500:
-            return jsonify({"message": "Internal server error"}), 500
+            return jsonify({"message": response.get("message")}), 500
         
         return jsonify(response), 200
     except Exception as e:
@@ -106,7 +106,7 @@ def update_room(request, room_id):
         if response.get("statusCode") == 404:
             return jsonify({"message": "Room not found"}), 404
         if response.get("statusCode") == 500:
-            return jsonify({"message": "Internal server error"}), 500
+            return jsonify({"message": response.get("message")}), 500
         
 
         return jsonify(response)
@@ -143,7 +143,7 @@ def update_room_dates(event, context):
             if response.get("statusCode") == 404:
                 return {"message": "Room not found"}, 404
             if response.get("statusCode") == 500:
-                return {"message": "Internal server error"}, 500
+                return {"message": response.get("message")}, 500
             
             return response
         

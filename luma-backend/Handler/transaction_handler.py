@@ -12,7 +12,7 @@ def add_transaction(request, user_id):
         if response.get("statusCode") == 400:
             return jsonify({"message": "Transaction already exists"}), 400
         if response.get("statusCode") == 500:
-            return jsonify({"message": "Internal server error"}), 500
+            return jsonify({"message": response.get("message")}), 500
         
         return jsonify(response), response.get("statusCode")
     except ValidationError as e:
@@ -47,7 +47,7 @@ def get_all_transactions(request):
             return jsonify({"message": "No transactions found"}), 404
         
         if response.get("statusCode") == 500:
-            return jsonify({"message": "Internal server error"}), 500
+            return jsonify({"message": response.get("message")}), 500
 
         return jsonify(response), 200
     except Exception as e:
@@ -73,9 +73,9 @@ def update_transaction(request, reservation_id):
         if response.get("statusCode") == 404:
             return jsonify({"message": "Transaction not found"}), 404
         if response.get("statusCode") == 400:
-            return jsonify({"message": "Transaction ID cannot be updated"}), 400
+            return jsonify({"message": response.get("message")}), 400
         if response.get("statusCode") == 500:
-            return jsonify({"message": "Internal server error"}), 500
+            return jsonify({"message": response.get("message")}), 500
         
         return jsonify(response)
     except Exception as e:
@@ -93,7 +93,7 @@ def delete_transaction(request, reservation_id):
             return jsonify({"message": "Transaction not found"}), 404
         
         if response.get("statusCode") == 500:
-            return jsonify({"message": "Internal server error"}), 500
+            return jsonify({"message": response.get("message")}), 500
         
         return jsonify(response)
     except Exception as e:

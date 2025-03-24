@@ -12,7 +12,7 @@ def add_package(request):
         if response.get("statusCode") == 400:
             return jsonify({"message": "Package already exists"}), 400
         if response.get("statusCode") == 500:
-            return jsonify({"message": "Internal server error"}), 500
+            return jsonify({"message": response.get("message")}), 500
         
 
         return jsonify(response)
@@ -58,12 +58,13 @@ def update_package(request, package_id):
         package = Package.get("package_id", package_id)
         if package.get("statusCode") == 404:
             return jsonify({"Package not found"}), 404
+        
         response = Package.update(package_id, request.json)
 
         if response.get("statusCode") == 400:
-            return jsonify({"message": "Package ID cannot be updated"}), 400
+            return jsonify({"message": response.get("message")}), 400
         if response.get("statusCode") == 500:
-            return jsonify({"message": "Internal server error"}), 500
+            return jsonify({"message": response.get("message")}), 500
 
         return jsonify(response)
     except Exception as e:
@@ -81,7 +82,7 @@ def delete_package(request, package_id):
             return jsonify({"message": "Package not found"}), 404
         
         if response.get("statusCode") == 500:
-            return jsonify({"message": "Internal server error"}), 500
+            return jsonify({"message": response.get("message")}), 500
         
         return jsonify(response)
     except Exception as e:

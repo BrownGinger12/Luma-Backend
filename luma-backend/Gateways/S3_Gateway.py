@@ -21,10 +21,10 @@ class S3Gateway:
         # Construct full S3 key (folder/filename)
         s3_key = f"{path}/{filename}"
         print(file.content_type)
-        
+        print(file)
         try:
             # Read file content and encode it in Base64
-            encoded_data = base64.b64encode(file.read())
+            encoded_data = base64.b64decode(file.read())
             
             # Upload encoded file to S3
             self.s3_client.put_object(

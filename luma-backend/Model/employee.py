@@ -56,7 +56,12 @@ class Employee(BaseModel):
     def update(user_id: str, update_data: dict):
         try:
             if "username" in update_data:
-                return {"statusCode": 400, "message": "Username cannot be updated"}
+                if db_handler.scan_table("username", update_data["username"]):
+                    return {"statusCode": 400, "message": "Username already exists"}
+            
+            if "email" in update_data:
+                if db_handler.scan_table("email", update_data["email"]):
+                    return {"statusCode": 400, "message": "Email already exists"}
             
             if "password" in update_data:
                 update_data["password"] = pwd_context.hash(update_data["password"])

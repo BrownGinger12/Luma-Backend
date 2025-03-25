@@ -261,6 +261,7 @@ def get_employee(current_employee):
 @app.route("/create_review", methods=['POST'])
 @user_token_required
 def create_review(current_user):
+    print(current_user)
     return add_review(request, current_user.get("user_id"))
 
 @app.route("/review/<reservation_id>", methods=['GET'])

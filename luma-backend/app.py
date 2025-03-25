@@ -280,10 +280,21 @@ def rev_ud(current_user, reservation_id):
 def get_reviews(room_id):
     return get_reviews_room(room_id)
 
-@app.route("/upload", methods=["POST"])
+@app.route("/upload_employee", methods=["POST"])
 @employee_token_required
-def create(current_employee):
-    return upload_image(request)
+def upload_employee(current_employee):
+    return upload_image(request, current_employee.get("user_id"), "employee")
+
+@app.route("/upload_user", methods=["POST"])
+@user_token_required
+def upload_user(current_user):
+    return upload_image(request, current_user.get("user_id"), "user")
+
+@app.route("/upload_room", methods=["POST"])
+@employee_token_required
+def upload_room(current_employee):
+    item_id = request.form.get("room_id")
+    return upload_image(request, item_id, "room")
 
 @app.errorhandler(404)
 def resource_not_found(e):

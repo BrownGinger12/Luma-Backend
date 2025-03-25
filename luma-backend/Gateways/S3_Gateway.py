@@ -19,19 +19,21 @@ class S3Gateway:
         
         # Construct full S3 key (folder/filename)
         s3_key = f"{path}/{filename}"
-
         try:
+             # Read the file as binary  
+            file_stream = file.stream
+
             self.s3_client.upload_fileobj(
-                file,
+                file_stream,  # Ensure file is treated as binary
                 self.bucket_name,
                 s3_key,
                 ExtraArgs={
                     "ACL": acl,
-                    "ContentType": file.content_type
+                    "ContentType": file.content_type  # Preserve content type
                 }
             )
-        except botocore.exceptions.BotoCoreError as e:
-            
-            return {"statusCode": 500, "message": str(e)}
 
+        except botocore.exceptions.BotoCoreError as e:
+            return {"statusCode": 500, "message": str(e)}
+        
         return {"statusCode": 200, "file": s3_key}

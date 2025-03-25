@@ -1,5 +1,5 @@
 from flask import Flask, jsonify, make_response, request
-from Handler.User_Handler import register_user, login_user, edit_user, delete_user, token_exchange, verify_github_token
+from Handler.User_Handler import register_user, login_user, edit_user, delete_user, token_exchange, verify_github_token, get_all_users
 from Handler.Employee_Handler import register_employee, login_employee, edit_employee, delete_employee
 from Handler.room_handler import add_room, get_room, get_all_rooms, search_rooms, update_room, delete_room
 from Handler.review_handler import *
@@ -125,6 +125,11 @@ def del_user(current_user):
 @user_token_required
 def get_user(current_user):
     return jsonify(current_user), 200
+
+@app.route("/get_all_users", methods=['GET'])
+
+def get_users():
+    return get_all_users()
 
 @app.route("/rooms", methods=['GET'])
 def get_rooms():

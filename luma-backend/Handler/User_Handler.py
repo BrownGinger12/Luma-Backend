@@ -109,6 +109,22 @@ def update_user_image(event, context):
         # event.send()
         return {"message": e}
     
+def get_all_users():
+    try:
+        response = User.get_all()
+
+        if response.get("statusCode") == 404:
+            return jsonify({"error": "No users found"}), 404
+        
+        if response.get("statusCode") == 500:
+            return jsonify({"error": "Internal server error"}), 500
+        
+        if response.get("data") == []:
+            return jsonify({"error": "No users found"}), 404
+        
+        return jsonify(response), response.get("statusCode")
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 # untested yet on PYTHON, but working on POSTMAN
 # basically we want to send a GET request on the github API below

@@ -36,6 +36,17 @@ class User(BaseModel):
             return {"statusCode": 500, "message": str(e)}
         
     @staticmethod
+    def get_one(user_id: str):
+        try:
+            user = db_handler.item_exists({"user_id": user_id})
+            if user:
+                return {"statusCode": 200, "data": user}
+
+            return {"statusCode": 404, "message": "User not found"}
+        except Exception as e:
+            return {"statusCode": 500, "message": str(e)}
+        
+    @staticmethod
     def get_all():
         try:
             users = db_handler.get_all_items()

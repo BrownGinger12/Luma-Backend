@@ -3,7 +3,7 @@ from Model.review import Review
 from pydantic import ValidationError
 from Gateways.DynamoDB_Gateway import DynamoDB
 
-def add_review(request,user_id):
+def add_review(request, user_id):
     data = request.json
     data["user_id"] = user_id
 

@@ -52,6 +52,19 @@ class User(BaseModel):
             return {"statusCode": 404, "message": "User not found"}
         except Exception as e:
             return {"statusCode": 500, "message": str(e)}
+        
+    @staticmethod
+    def get_all():
+        try:
+            users = db_handler.get_all_items()
+
+            for user in users["data"]:
+                user.pop("password")
+                print (user)
+            
+            return users
+        except Exception as e:
+            return {"statusCode": 500, "message": str(e)}
     
     @staticmethod
     def update(user_id: str, update_data: dict):

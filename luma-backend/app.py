@@ -1,5 +1,5 @@
 from flask import Flask, jsonify, make_response, request
-from Handler.User_Handler import register_user, login_user, edit_user, delete_user, token_exchange, verify_github_token, get_all_users
+from Handler.User_Handler import register_user, login_user, edit_user, delete_user, token_exchange, verify_github_token, get_all_users, verify_user
 from Handler.Employee_Handler import register_employee, login_employee, edit_employee, delete_employee
 from Handler.room_handler import add_room, get_room, get_all_rooms, search_rooms, update_room, delete_room
 from Handler.review_handler import *
@@ -8,7 +8,7 @@ from Handler.luma_events_handler import add_event, get_all_events, get_event, up
 from Handler.package_handler import add_package, get_all_packages, get_package, update_package, delete_package
 from functools import wraps
 from Helper.helper_func import get_cognito_public_keys
-from Model.User import User
+from Model.User import User 
 from Model.employee import Employee
 from Handler.Image_Upload_Handler import upload_image
 import jwt
@@ -35,7 +35,7 @@ def user_token_required(f):
         
         try:
             data = jwt.decode(token, signing_key, algorithms=["RS256"])
-            current_user = User.get('user_id', data['user_id'])
+            current_user = User.get('user_id', data['sub'])
             
             current_user["token"] = token
 
@@ -119,6 +119,13 @@ def update_user(current_user):
     data = request.get_json()
 
     return edit_user(data, current_user.get("user_id"), current_user.get("token"))
+
+@app.route("/verify_user", methods=['POST'])
+def verify():
+    data = request.get_json()
+    
+    return verify_user(data)
+    
 
 @app.route("/delete_user", methods=['DELETE'])
 @user_token_required

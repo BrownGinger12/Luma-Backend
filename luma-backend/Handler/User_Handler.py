@@ -119,6 +119,22 @@ def get_all_users():
         return jsonify(response), response.get("statusCode")
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
+def verify_user(request):
+    try:
+        data = request
+
+        if not data:
+            return jsonify({"error": "No data provided"}), 400
+        
+        resp = Cognito().confirm_user(data["username"], data["confirmation_code"])
+        
+        return jsonify({"message": resp.get("message")}), resp.get("statusCode")
+ 
+        
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+        
 
 # untested yet on PYTHON, but working on POSTMAN
 # basically we want to send a GET request on the github API below

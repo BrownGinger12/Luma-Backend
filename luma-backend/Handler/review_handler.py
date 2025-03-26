@@ -1,5 +1,6 @@
 from flask import jsonify
 from Model.review import Review
+from Model.User import User
 from pydantic import ValidationError
 from Gateways.DynamoDB_Gateway import DynamoDB
 
@@ -103,6 +104,11 @@ def get_reviews_room(room_id):
             return jsonify({"message": "No data provided"}), 400
         
         response = Review.get_some(room_id)
+        for x in response["data"]:
+            user = User.get_one(x["user_id"])
+            user = user["data"]
+            x["fullName"] = user["fullName"]
+            
         return jsonify(response)
     except Exception as e:
         return jsonify({"message": str(e)}), 500

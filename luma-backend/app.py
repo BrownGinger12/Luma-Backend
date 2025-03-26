@@ -3,7 +3,7 @@ from Handler.User_Handler import register_user, login_user, edit_user, delete_us
 from Handler.Employee_Handler import register_employee, login_employee, edit_employee, delete_employee
 from Handler.room_handler import add_room, get_room, get_all_rooms, search_rooms, update_room, delete_room
 from Handler.review_handler import *
-from Handler.transaction_handler import add_transaction, get_all_transactions, get_transaction, update_transaction, delete_transaction
+from Handler.transaction_handler import add_transaction, get_all_transactions, get_transaction, update_transaction, delete_transaction, get_transactions_user
 from Handler.luma_events_handler import add_event, get_all_events, get_event, update_event, delete_event
 from Handler.package_handler import add_package, get_all_packages, get_package, update_package, delete_package
 from functools import wraps
@@ -170,6 +170,11 @@ def add_one_transaction(current_user):
 def get_transactions():
     return get_all_transactions(request)
 
+@app.route("/transactions/own", methods=['GET'])
+@user_token_required
+def get_user_transactions(current_user):
+    return get_transactions_user(request, current_user.get("user_id"))
+
 @app.route("/transaction/<reservation_id>", methods=['GET'])
 def get_one_transaction(reservation_id):
     return get_transaction(request, reservation_id)
@@ -281,6 +286,11 @@ def rev_ud(current_user, reservation_id):
         return method_handler[request.method](request, reservation_id)
     
     return method_handler[request.method](reservation_id)
+
+@app.route("/reviews/<user_id>", methods=['GET'])
+def get_reviews_current_user(user_id):
+    return get_reviews_user(user_id)
+
 
 @app.route("/reviews/room/<room_id>", methods=['GET'])
 def get_reviews(room_id):

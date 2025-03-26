@@ -63,6 +63,15 @@ class Transaction(BaseModel):
             return {"statusCode": 500, "message": str(e)}
         
     @staticmethod
+    def get_some_by_user(user_id: str):
+        try:
+            transactions = db_handler.query_items("user_id", user_id, "user_id-index")
+            if transactions:
+                return transactions
+        except Exception as e:
+            return {"statusCode": 500, "message": str(e)}
+        
+    @staticmethod
     def update(reservation_id: str, update_data: dict):
         try:
             if "reservation_id" in update_data:

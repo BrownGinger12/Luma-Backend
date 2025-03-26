@@ -37,8 +37,11 @@ provider:
             - arn:aws:dynamodb:us-east-2:272898481162:table/luma-rooms
             - arn:aws:dynamodb:us-east-2:272898481162:table/luma-events
             - arn:aws:dynamodb:us-east-2:272898481162:table/luma-package
-            - arn:aws:dynamodb:us-east-2:272898481162:table/luma-customer-reviews
+            - arn:aws:dynamodb:us-east-2:272898481162:table/luma-room-reviews
+            - arn:aws:dynamodb:us-east-2:272898481162:table/luma-room-reviews/index/room_id-index
+            - arn:aws:dynamodb:us-east-2:272898481162:table/luma-room-reviews/index/user_id-index
             - arn:aws:dynamodb:us-east-2:272898481162:table/luma-reservation-transaction
+            - arn:aws:dynamodb:us-east-2:272898481162:table/luma-reservation-transaction/index/user_id-index
             - arn:aws:events:us-east-2:272898481162:event-bus/luma-event-bus
             - arn:aws:s3:::luma-resources
             - arn:aws:s3:::luma-resources/*

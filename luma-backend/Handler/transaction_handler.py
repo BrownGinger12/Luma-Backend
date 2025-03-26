@@ -53,6 +53,26 @@ def get_all_transactions(request):
     except Exception as e:
         return jsonify({"message": str(e)}), 500
     
+def get_transactions_user(request, user_id):
+    try:
+        data = request
+        if not data:
+            return jsonify({"message": "No data provided"}), 400
+        
+        response = Transaction.get_some_by_user(user_id)
+
+        if response.get("statusCode") == 404:
+            return jsonify({"message": "Transaction not found"}), 404
+        if response.get("data") == []:
+            return jsonify({"message": "No transactions found"}), 404
+        
+        if response.get("statusCode") == 500:
+            return jsonify({"message": response.get("message")}), 500
+        
+        return jsonify(response)
+    except Exception as e:
+        return jsonify({"message": str(e)}), 500
+    
 def update_transaction(request, reservation_id):
     try:
         data = request

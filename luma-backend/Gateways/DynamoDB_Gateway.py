@@ -40,7 +40,7 @@ class DynamoDB:
         """Inserts a new item only if it does not already exist."""
 
         if self.item_exists(item_id):
-            return {"statusCode": 400, "message": "Item already exists"}
+            return {"statusCode": 400, "message": self.item_exists(item_id)}
         
         try:
             self.table.put_item(Item=item)

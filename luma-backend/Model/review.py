@@ -24,7 +24,7 @@ class Review(BaseModel):
     def create(self):
         try:
             review_data = self.__dict__
-            response = db_handler.put_item(review_data, {"review_id": review_data.get("review_id")})
+            response = db_handler.put_item(review_data, {"review_id": review_data["review_id"]})
             return response
         except Exception as e:
             return {"statusCode": 500, "message": str(e)}
@@ -86,6 +86,17 @@ class Review(BaseModel):
     def get_some(room_id: str):
         try:
             reviews = db_handler.query_items("room_id", room_id, "room_id-index")
+            if reviews:
+                return reviews
+
+            return {"statusCode": 404, "message": "No reviews found"}
+        except Exception as e:
+            return {"statusCode": 500, "message": str(e)}
+        
+    @staticmethod
+    def get_some_by_user(user_id: str):
+        try:
+            reviews = db_handler.query_items("user_id", user_id, "user_id-index")
             if reviews:
                 return reviews
 

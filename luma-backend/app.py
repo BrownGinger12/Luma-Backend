@@ -7,6 +7,7 @@ from Handler.transaction_handler import add_transaction, get_all_transactions, g
 from Handler.luma_events_handler import add_event, get_all_events, get_event, update_event, delete_event
 from Handler.package_handler import add_package, get_all_packages, get_package, update_package, delete_package
 from functools import wraps
+from Helper.helper_func import get_cognito_public_keys
 from Model.User import User
 from Model.employee import Employee
 from Handler.Image_Upload_Handler import upload_image
@@ -28,12 +29,15 @@ def user_token_required(f):
         if not token:
             return jsonify({"error": "Token is missing!"}), 401
         
+        jwks_client = jwt.PyJWKClient("https://cognito-idp.us-east-2.amazonaws.com/us-east-2_LtfZLyFVF/.well-known/jwks.json")
+        
+        signing_key = jwks_client.get_signing_key_from_jwt(token).key
+        
         try:
-            data = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
+            data = jwt.decode(token, signing_key, algorithms=["RS256"])
             current_user = User.get('user_id', data['user_id'])
-
-            if "password" in current_user["data"]:
-                del current_user["data"]["password"]
+            
+            current_user["token"] = token
 
             if current_user.get("statusCode") != 200:
                 return jsonify({"error": f"User not found! {current_user}"}), 404
@@ -114,7 +118,7 @@ def login_github():
 def update_user(current_user):
     data = request.get_json()
 
-    return edit_user(data, current_user.get("user_id"))
+    return edit_user(data, current_user.get("user_id"), current_user.get("token"))
 
 @app.route("/delete_user", methods=['DELETE'])
 @user_token_required

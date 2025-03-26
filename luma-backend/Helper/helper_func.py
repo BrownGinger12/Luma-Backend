@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 import json
 from decimal import Decimal
+import requests
 
 def get_dates_in_range(start_date: str, end_date: str, date_format: str = "%Y-%m-%d"):
     """
@@ -25,3 +26,11 @@ class DecimalEncoder(json.JSONEncoder):
     if isinstance(obj, Decimal):
       return str(obj)
     return json.JSONEncoder.default(self, obj)
+
+
+def get_cognito_public_keys():
+    """Fetch Cognito's JSON Web Key Set (JWKS) for verifying tokens"""
+    url = "https://cognito-idp.us-east-2.amazonaws.com/us-east-2_LtfZLyFVF/.well-known/jwks.json"
+    response = requests.get(url)
+    response.raise_for_status()
+    return response.json()["keys"]

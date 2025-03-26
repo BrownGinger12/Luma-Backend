@@ -31,6 +31,13 @@ provider:
             - events:PutEvents
             - s3:PutObject
             - s3:PutObjectAcl
+            - cognito-idp:SignUp
+            - cognito-idp:InitiateAuth
+            - cognito-idp:RespondToAuthChallenge
+            - cognito-idp:ConfirmSignUp
+            - cognito-idp:ForgotPassword
+            - cognito-idp:ConfirmForgotPassword
+            - cognito-idp:ResendConfirmationCode
           Resource:
             - arn:aws:dynamodb:us-east-2:272898481162:table/luma-customer-accounts
             - arn:aws:dynamodb:us-east-2:272898481162:table/luma-employee-accounts
@@ -45,6 +52,7 @@ provider:
             - arn:aws:events:us-east-2:272898481162:event-bus/luma-event-bus
             - arn:aws:s3:::luma-resources
             - arn:aws:s3:::luma-resources/*
+            - arn:aws:cognito-idp:us-east-2:272898481162:userpool/us-east-2_LtfZLyFVF
 
 
   environment:

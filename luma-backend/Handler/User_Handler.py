@@ -4,8 +4,10 @@ import jwt
 import datetime
 from pydantic import ValidationError
 import requests
+from Gateways.Cognito_Gateway import Cognito
 
 SECRET_KEY = "I am a secret key"
+
 
 def register_user(request):
     try:
@@ -28,31 +30,16 @@ def login_user(request):
         if not data:
             return jsonify({"error": "No data provided"}), 400
 
+        resp = Cognito().login_user(username=data["username"], password=data["password"])
 
-        user = User.get("username", data.get("username"))
-        if user.get("statusCode") == 404:
-            return jsonify({"error": "User not found"}), 404
-
-        user = user.get("data")
-
-        if User.verify_password(data.get("password"), user.get("password")):
-            user["token"] = jwt.encode({"user_id": user.get("user_id"), 
-                                        "username": user.get("username"), 
-                                        "profile_url": user.get("profile_url"),
-                                        "fullName": user.get("fullName"),
-                                        "email": user.get("email"),
-                                        "exp": datetime.datetime.utcnow() + 
-                                        datetime.timedelta(minutes=30)}, 
-                                        SECRET_KEY)
-
-        if not user.get("token"):
-            return jsonify({"error": "Invalid credentials"}), 401
-
-        return jsonify({"token": user.get("token")}), 200
+        if resp["statusCode"] != 200:
+            return jsonify({"message": resp["message"]}), resp["statusCode"]
+        
+        return jsonify({"token": resp["AccessToken"]}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-def edit_user(request, user_id):
+def edit_user(request, user_id, access_token):
     try:
         data = request
 
@@ -63,7 +50,14 @@ def edit_user(request, user_id):
 
         if user.get("statusCode") == 404:
             return jsonify({"error": "User not found"}), 404
-
+        
+        user = user.get("data")
+        
+        if data.get("old_password") and data.get("new_password"):
+            resp = Cognito().change_password(access_token, data.get("old_password"), data.get("new_password"))
+            
+            if resp.get("statusCode") != 200:
+                return jsonify({"message": resp.get("message")}), resp.get("statusCode")
         
         response = User.update(user_id, data)    
         

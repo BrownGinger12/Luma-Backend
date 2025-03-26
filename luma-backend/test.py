@@ -1,23 +1,6 @@
-from datetime import datetime, timedelta
+from Gateways.Cognito_Gateway import Cognito
+resp = Cognito().change_password(access_token="eyJraWQiOiJSd0tFTFRUZTZRTWFsYjczazQ0MUZJcmU4VDJhY1BrOUZHR05PVTdhbjZBPSIsImFsZyI6IlJTMjU2In0.eyJzdWIiOiI3MWJiYjUwMC1hMDkxLTcwNjctODMzYi0zNTI2YjliMTk2NGIiLCJpc3MiOiJodHRwczpcL1wvY29nbml0by1pZHAudXMtZWFzdC0yLmFtYXpvbmF3cy5jb21cL3VzLWVhc3QtMl9MdGZaTHlGVkYiLCJjbGllbnRfaWQiOiI0ZHFibW43cGlkZHNmOWo2ZnU2MWR0b3U1biIsIm9yaWdpbl9qdGkiOiJjY2YyMGMyNC0xMWUzLTQ0MzctOWViZi0xMGY5ZTU2ZGZjN2UiLCJldmVudF9pZCI6ImEzZGJhZWExLTc1ZjUtNDI2Yi04ZTA0LTUzZjFhN2JmMzU2NCIsInRva2VuX3VzZSI6ImFjY2VzcyIsInNjb3BlIjoiYXdzLmNvZ25pdG8uc2lnbmluLnVzZXIuYWRtaW4iLCJhdXRoX3RpbWUiOjE3NDI5NzM5NjQsImV4cCI6MTc0Mjk3NzU2NCwiaWF0IjoxNzQyOTczOTY0LCJqdGkiOiI0NDc5MWMxYi0yMjk0LTRjOTktOTc3ZC0xYjdjODMxNTQxOWUiLCJ1c2VybmFtZSI6ImJyb3duZ2luZ2ExMiJ9.ORNPGdmaPRL-8CWti8d6p0FIDQITLLnY0C4nXebX_4aim_l3BlZkYQAXUb_1-b326GZ50BonN7jM1R84MOILZUdB5nkYKjmSDmw7HN52q1Fxl3dfRdDX409aibEhwvh5c2sZYQ0LUaqmeJSSNvHBsltWXrKjZ6Y9DvWP7CY7vs-_LuVgNOx5bjUTXG6OrPUW2Rv2QvIAnmWYU6iAdh7bvutcyO490B1aVWmcTZ2ZsmP_GlvJ7BQRUmp8HvgKdYk-gZVO6E9xvvKGCzk9wrIKbdpZWFQqjWLnCyWyRlxZJIqRETwgBc5XVLMTtjA2s_kbgbUYBa80RUfFjZkoenQaqQ", 
+                                 username="@Casilao123", password="@Casilao123")
 
-def get_dates_in_range(start_date: str, end_date: str, date_format: str = "%Y-%m-%d"):
-    """
-    Returns a list of dates between start_date and end_date (inclusive).
-    
-    :param start_date: Start date as a string (e.g., "2025-03-01")
-    :param end_date: End date as a string (e.g., "2025-03-05")
-    :param date_format: The format of the input dates (default is "%Y-%m-%d")
-    :return: List of date strings in the same format.
-    """
-    # Convert string dates to datetime objects
-    start = datetime.strptime(start_date, date_format)
-    end = datetime.strptime(end_date, date_format)
+print(resp)
 
-    # Generate dates in range (inclusive)
-    date_list = [(start + timedelta(days=i)).strftime(date_format) for i in range((end - start).days + 1)]
-    
-    return date_list
-
-# Example Usage
-dates = get_dates_in_range("2025-03-20", "2025-03-24")
-print(dates)

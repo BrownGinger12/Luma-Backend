@@ -1,22 +1,21 @@
-# "org" ensures this Service is used with the correct Serverless Framework License Key.
-org: brownginger12
-# "service" is the name of this project. This will also be added to your AWS resource names.
-service: luma-backend
+org: ${env:ORG_NAME}
+service: ${env:SERVICE_NAME}
 
 custom:
   wsgi:
-    app: app.app
+    app: ${env:WSGI_APP}
   pythonRequirements:
     dockerizePip: true
   prune:
-    automatic: true       
-    includeLayers: true   
-    number: 1  
-  
+    automatic: true
+    includeLayers: true
+    number: 1
 
 provider:
   name: aws
-  runtime: python3.12
+  runtime: ${env:PYTHON_RUNTIME}
+  region: ${env:AWS_REGION}
+
   iam:
     role:
       statements:
@@ -32,25 +31,25 @@ provider:
             - s3:PutObject
             - s3:PutObjectAcl
           Resource:
-            - arn:aws:dynamodb:us-east-2:272898481162:table/luma-customer-accounts
-            - arn:aws:dynamodb:us-east-2:272898481162:table/luma-employee-accounts
-            - arn:aws:dynamodb:us-east-2:272898481162:table/luma-rooms
-            - arn:aws:dynamodb:us-east-2:272898481162:table/luma-events
-            - arn:aws:dynamodb:us-east-2:272898481162:table/luma-package
-            - arn:aws:dynamodb:us-east-2:272898481162:table/luma-room-reviews
-            - arn:aws:dynamodb:us-east-2:272898481162:table/luma-room-reviews/index/room_id-index
-            - arn:aws:dynamodb:us-east-2:272898481162:table/luma-room-reviews/index/user_id-index
-            - arn:aws:dynamodb:us-east-2:272898481162:table/luma-reservation-transaction
-            - arn:aws:dynamodb:us-east-2:272898481162:table/luma-reservation-transaction/index/user_id-index
-            - arn:aws:events:us-east-2:272898481162:event-bus/luma-event-bus
-            - arn:aws:s3:::luma-resources
-            - arn:aws:s3:::luma-resources/*
-
+            - ${env:DYNAMODB_CUSTOMER_TABLE_ARN}
+            - ${env:DYNAMODB_EMPLOYEE_TABLE_ARN}
+            - ${env:DYNAMODB_ROOMS_TABLE_ARN}
+            - ${env:DYNAMODB_EVENTS_TABLE_ARN}
+            - ${env:DYNAMODB_PACKAGE_TABLE_ARN}
+            - ${env:DYNAMODB_ROOM_REVIEWS_TABLE_ARN}
+            - ${env:DYNAMODB_ROOM_REVIEWS_ROOM_INDEX_ARN}
+            - ${env:DYNAMODB_ROOM_REVIEWS_USER_INDEX_ARN}
+            - ${env:DYNAMODB_RESERVATION_TABLE_ARN}
+            - ${env:DYNAMODB_RESERVATION_USER_INDEX_ARN}
+            - ${env:EVENTBRIDGE_BUS_ARN}
+            - ${env:S3_BUCKET_ARN}
+            - ${env:S3_BUCKET_OBJECTS_ARN}
 
   environment:
-    USERS_TABLE: luma-customer-accounts
-    EMPLOYEES_TABLE: luma-employee-accounts
-  
+    USERS_TABLE: ${env:USERS_TABLE}
+    EMPLOYEES_TABLE: ${env:EMPLOYEES_TABLE}
+    EVENT_BUS_NAME: ${env:EVENT_BUS_NAME}
+    S3_BUCKET_NAME: ${env:S3_BUCKET_NAME}
 
 package:
   exclude:
@@ -72,32 +71,32 @@ functions:
     handler: Handler.room_handler.update_room_dates
     events:
       - eventBridge:
-          eventBus: arn:aws:events:us-east-2:272898481162:event-bus/luma-event-bus
+          eventBus: ${env:EVENTBRIDGE_BUS_ARN}
           pattern:
             source:
-              - api-events
+              - ${env:EVENT_SOURCE}
             detail-type:
               - transaction_update_room_dates
-  
+
   room_date_change_onfailure:
     handler: Handler.transaction_handler.delete_transaction_event
     events:
       - eventBridge:
-          eventBus: arn:aws:events:us-east-2:272898481162:event-bus/luma-event-bus
+          eventBus: ${env:EVENTBRIDGE_BUS_ARN}
           pattern:
             source:
-              - api-events
+              - ${env:EVENT_SOURCE}
             detail-type:
               - transaction_on_failure
-  
+
   roomImageUpload:
     handler: Handler.room_handler.update_room_image
     events:
       - eventBridge:
-          eventBus: arn:aws:events:us-east-2:272898481162:event-bus/luma-event-bus
+          eventBus: ${env:EVENTBRIDGE_BUS_ARN}
           pattern:
             source:
-              - api-events
+              - ${env:EVENT_SOURCE}
             detail-type:
               - room_image_upload
 
@@ -105,10 +104,10 @@ functions:
     handler: Handler.User_Handler.update_user_image
     events:
       - eventBridge:
-          eventBus: arn:aws:events:us-east-2:272898481162:event-bus/luma-event-bus
+          eventBus: ${env:EVENTBRIDGE_BUS_ARN}
           pattern:
             source:
-              - api-events
+              - ${env:EVENT_SOURCE}
             detail-type:
               - user_image_upload
 
@@ -116,10 +115,10 @@ functions:
     handler: Handler.Employee_Handler.update_user_image
     events:
       - eventBridge:
-          eventBus: arn:aws:events:us-east-2:272898481162:event-bus/luma-event-bus
+          eventBus: ${env:EVENTBRIDGE_BUS_ARN}
           pattern:
             source:
-              - api-events
+              - ${env:EVENT_SOURCE}
             detail-type:
               - employee_image_upload
 
